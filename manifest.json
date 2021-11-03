@@ -1,0 +1,35 @@
+{
+
+  "manifest_version": 2,
+  "name": "copaBrando",
+  "version": "2.8",
+  "description": "",
+  "permissions": [
+    "storage",
+    "declarativeContent",
+    "activeTab",
+    "tabs"
+  ],
+  "icons": {
+    "96": "icons/placeholder_wob96.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "96":"icons/placeholder_wob96.png"
+    },
+    "default_title": "copa Brando",
+    "default_popup": "popup/menu.html"
+  },
+  "options_page": "options/settings.html",
+  "background": {
+    "scripts": ["./background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./content_scripts/main.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

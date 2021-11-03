@@ -1,0 +1,48 @@
+<html>
+<head>
+<style>
+.cols{
+display:flex;
+flex-direction: row;
+align-items:stretch;
+width: 600px;
+}
+
+.cols > div,input{
+flex-direction: column;
+display: flex;
+width: 300px;
+border: 1px solid red;
+
+}
+
+</style>
+
+</head>
+
+<body style="overflow: hidden">
+
+<div class="cols">
+
+  <div>
+  outer
+  <div>123</div>
+  <div>456</div>
+  <div>789</div>
+  <div>1011</div>
+  <div>1213</div>
+  </div>
+
+  <div>
+  <input type="text" />
+  <input type="text" />
+  <input type="text" />
+  <input type="text" />
+  <input type="text" />
+  </div>
+</div>
+
+
+</body>
+
+</html>
