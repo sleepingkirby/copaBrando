@@ -17,8 +17,28 @@
   var pstSt=false; // paste state
 
   //pass in mouseover event and settings to evaluate if button pressed matches settings.
-  function btnPrssd(e, ){
-  return true;
+  function btnPrssd(e, btns){
+  console.log(e);
+    if(!btns.hasOwnProperty("key")||!btns.key||btns.key===""||btns.key===undefined){
+    return false;
+    }
+  var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
+    //if main button pressed (after translation) isn't in the list of buttons pressed, it automatically fails.
+    //keyup HAS to have e.key. And if we're saying that all of btns HAS to match to be true and e.key isn't in btns
+    //it has to fail.
+    if(!btns.hasOwnProperty(tr[e.key.toLocaleLowerCase()]) || btns[tr[e.key.toLocaleLowerCase()]]!=true){
+    return false;
+    }
+
+  var tmpH=Object.assign({}, btns);
+  delete tmpH[tr[e.key.toLocaleLowerCase()]]; //it e.key does match, not need to check it again.
+    for(let k in btns){
+      if(tmpH[k]!=e[k+"Key"]){
+        return false;
+      }
+    }
+
+  return false;
   }
 
   //pass in e.target and settings.copyList. returns true or false on whether or not it is in list
@@ -40,7 +60,8 @@ pre:
 post:
 ---------------------------*/
   function mouseOvrFnc(e){
-    if(e.target && e.ctrlKey && e.target.innerText!="" && e.target.tagName.toLocaleLowerCase()=="div"){
+  console.log(btnPrssd(e, settings.cpKeys));
+    if(e.target && btnPrssd(e, settings.cpKeys) && e.target.innerText!="" && e.target.tagName.toLocaleLowerCase()=="div"){
     let txt= e.target.childNodes[0].textContent;
     console.log("=============>>");
     //console.log(txt);
@@ -62,6 +83,7 @@ post:
   
   //terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
   function termState(e){
+  console.log(e);
     if(btnPrssd(e,settings.cpKeys)&&cpSt){
     //release copy key
     cpSt=false;
@@ -74,7 +96,6 @@ post:
     }
     if(btnPrssd(e,settings.cpKeys)&&pstSt){
     //release paste key
-    console.log(e);
     pstSt=false;      
       if(settings.keepStck){
       tmpStack=stack;

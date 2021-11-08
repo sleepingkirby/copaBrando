@@ -6,8 +6,8 @@ chrome.storage.local.get(null, (d) => {
     var settings={
     "curStck":"scratch",
     "keepStck":false,
-    "cpKeys":{"ctrl":1},
-    "pstKeys":{"ctrl":1,"shift":1},
+    "cpKeys":{"ctrl":true, "shift":true, "alt": false},
+    "pstKeys":{"ctrl":true, "shift":false, "alt": false},
     "stcks":{
       "scratch":[]
       }
