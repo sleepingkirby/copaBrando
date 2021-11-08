@@ -18,7 +18,8 @@
 
   //pass in mouseover event and settings to evaluate if button pressed matches settings.
   function btnPrssd(e, btns){
-  console.log(e);
+  }
+  function mouseOvrPrssd(e, btns){
     if(!btns.hasOwnProperty("key")||!btns.key||btns.key===""||btns.key===undefined){
     return false;
     }
