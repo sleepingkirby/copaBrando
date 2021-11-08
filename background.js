@@ -2,7 +2,6 @@
 
 
 chrome.storage.local.get(null, (d) => {
-console.log(Object.keys(d).length);
   if(Object.keys(d).length <= 0){
     var settings={
     "curStck":"scratch",

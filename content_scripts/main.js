@@ -43,9 +43,10 @@ post:
     if(e.target && e.ctrlKey && e.target.innerText!="" && e.target.tagName.toLocaleLowerCase()=="div"){
     let txt= e.target.childNodes[0].textContent;
     console.log("=============>>");
-    console.log(txt);
+    //console.log(txt);
     stack.push(txt);
     console.log(stack);
+    cpSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
     else if(e.target && e.altKey && (e.target.tagName.toLocaleLowerCase()=="input" || e.target.tagName.toLocaleLowerCase()=="textarea")){
@@ -54,34 +55,36 @@ post:
       e.target.value=txt;
       }
     console.log(stack);
+    pstSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
   }
   
   //terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
   function termState(e){
-  console.log(e);
     if(btnPrssd(e,settings.cpKeys)&&cpSt){
-    console.log(e);
     //release copy key
     cpSt=false;
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
       if(!settings.keepStck){
-        chrome.storage.local.set({},(d)=>{});
+      var tmp={"stcks":{}};
+      tmp["stcks"][settings.curStck]=stack;
+        chrome.storage.local.set(tmp,(d)=>{});
       }
     }
-  /*
     if(btnPrssd(e,settings.cpKeys)&&pstSt){
     //release paste key
+    console.log(e);
     pstSt=false;      
       if(settings.keepStck){
       tmpStack=stack;
       }
       else{
-      chrome.storage.local({settings.stacks[settngs.curStck]:stack};
+      var tmp={"stcks":{}};
+      tmp["stcks"][settings.curStck]=stack;
+      chrome.storage.local.set(tmp,(d)=>{});
       }
     }
-  */
   }
 
   /*--------------
