@@ -17,9 +17,18 @@
   var pstSt=false; // paste state
 
   //pass in mouseover event and settings to evaluate if button pressed matches settings.
-  function btnPrssd(e, btns){
+  function altKeyPrssd(e, btns){
+  var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
+
+    for(let k in btns){
+      if(btns[k]!=e[k+"Key"]){
+        return false;
+      }
+    }
+  return true;
   }
-  function mouseOvrPrssd(e, btns){
+
+  function keyUpPrssd(e, btns){
     if(!btns.hasOwnProperty("key")||!btns.key||btns.key===""||btns.key===undefined){
     return false;
     }
@@ -33,24 +42,26 @@
 
   var tmpH=Object.assign({}, btns);
   delete tmpH[tr[e.key.toLocaleLowerCase()]]; //it e.key does match, not need to check it again.
-    for(let k in btns){
-      if(tmpH[k]!=e[k+"Key"]){
-        return false;
-      }
-    }
-
-  return false;
+  return altKeyPrssd(e,tmpH);
   }
 
   //pass in e.target and settings.copyList. returns true or false on whether or not it is in list
-  function validEl(trgt, lst){
+  function validEl(trgt, lst, pst=false){
+    if(lst.hasOwnProperty(trgt.tagName.toLocaleLowerCase())){
+    return false;
+    }
+    if(pst&&trgt.tagName.toLocaleLowerCase()!="input"&&trgt.tagName.toLocaleLowerCase()!="textarea"&&!trgt.getAttribute("contentEditable")){
+    return false;
+    }
+  return true;
   }
 
   //call to update settings variable.
   function updtSttng(){
     chrome.storage.local.get(null, (d)=>{
-    console.log(d);
     settings=d;
+    stack=d.stcks[d.curStck];
+    chrome.runtime.sendMessage({'num':stack.length});
     });
   }
 
@@ -61,8 +72,24 @@ pre:
 post:
 ---------------------------*/
   function mouseOvrFnc(e){
-  console.log(btnPrssd(e, settings.cpKeys));
-    if(e.target && btnPrssd(e, settings.cpKeys) && e.target.innerText!="" && e.target.tagName.toLocaleLowerCase()=="div"){
+  console.log("======================>>");
+    console.log(altKeyPrssd(e, settings.pstKeys));
+    console.log(validEl(e.target, settings.pstElBList, true));
+    if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
+    let txt=settings.keepStck?tmpStack.pop():stack.pop();
+    console.log(txt);
+      if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
+      e.target.value=txt;
+      }
+      else if(txt&&e.target.getAttribute("contentEditable")){
+      e.target.innerText=txt;
+      }
+    console.log(stack);
+    pstSt = true;
+    chrome.runtime.sendMessage({'num':stack.length});
+    }
+   
+    if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
     let txt= e.target.childNodes[0].textContent;
     console.log("=============>>");
     //console.log(txt);
@@ -71,31 +98,11 @@ post:
     cpSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
-    else if(e.target && e.altKey && (e.target.tagName.toLocaleLowerCase()=="input" || e.target.tagName.toLocaleLowerCase()=="textarea")){
-    let txt=stack.pop();
-      if(txt){
-      e.target.value=txt;
-      }
-    console.log(stack);
-    pstSt = true;
-    chrome.runtime.sendMessage({'num':stack.length});
-    }
   }
   
   //terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
   function termState(e){
-  console.log(e);
-    if(btnPrssd(e,settings.cpKeys)&&cpSt){
-    //release copy key
-    cpSt=false;
-      //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
-      if(!settings.keepStck){
-      var tmp={"stcks":{}};
-      tmp["stcks"][settings.curStck]=stack;
-        chrome.storage.local.set(tmp,(d)=>{});
-      }
-    }
-    if(btnPrssd(e,settings.cpKeys)&&pstSt){
+    if(altKeyPrssd(e,settings.pstKeys)&&pstSt){
     //release paste key
     pstSt=false;      
       if(settings.keepStck){
@@ -107,13 +114,34 @@ post:
       chrome.storage.local.set(tmp,(d)=>{});
       }
     }
+
+    if(altKeyPrssd(e,settings.cpKeys)&&cpSt){
+    //release copy key
+    cpSt=false;
+      //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
+      if(!settings.keepStck){
+      var tmp={"stcks":{}};
+      tmp["stcks"][settings.curStck]=stack;
+        chrome.storage.local.set(tmp,(d)=>{});
+      }
+    }
   }
 
   /*--------------
   ---------------*/
   function runOnMsg(msg, sender, sendResponse){
+    if(!msg&&!msg.hasOwnProperty("action")){
+    return false;
+    }
   //when tabbed into, update settings and stack.  
-
+    switch(msg.action){
+      case 'update settings':
+      updtSttng();
+      sendResponse(true);
+      break;
+      default:
+      break;
+    }
   }
 
   document.addEventListener("mouseover", mouseOvrFnc);
