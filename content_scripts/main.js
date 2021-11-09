@@ -73,11 +73,8 @@ post:
 ---------------------------*/
   function mouseOvrFnc(e){
   console.log("======================>>");
-    console.log(altKeyPrssd(e, settings.pstKeys));
-    console.log(validEl(e.target, settings.pstElBList, true));
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck?tmpStack.pop():stack.pop();
-    console.log(txt);
       if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
       e.target.value=txt;
       }
@@ -88,7 +85,7 @@ post:
     pstSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
-   
+  
     if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
     let txt= e.target.childNodes[0].textContent;
     console.log("=============>>");

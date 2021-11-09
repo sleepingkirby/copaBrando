@@ -8,7 +8,7 @@ chrome.storage.local.get(null, (d) => {
     "keepStck":false,
     "cpKeys":{"ctrl":true, "shift":true, "alt": false},
     "pstKeys":{"ctrl":true, "shift":false, "alt": false},
-    "cpElBList":{"body":true, "style":true, "script":true, "head":true},
+    "cpElBList":{"body":true, "style":true, "script":true, "head":true, "html":true},
     "pstElBList":{},
     "stcks":{
       "scratch":[]
@@ -33,7 +33,9 @@ chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
   if(msg.num<=0){
   chrome.browserAction.setBadgeText({text: ""});
   }
+  else{
   chrome.browserAction.setBadgeText({text: msg.num.toString()});
+  }
 sendResponse(true);
 });
 
