@@ -12,11 +12,11 @@ html, body {
 
 body > div{
 display: flex;
-margin-bottom: 8px;
-justify-content: flex-end;
 }
 
-input{
+input,textarea{
+font-size: 9pt;
+color: #888888;
 font-size: 9pt;
 }
 
@@ -24,114 +24,21 @@ a{
 text-decoration: none;
 color: #0852ff;
 font-weight: 700;
+font-size: smaller;
+font-family: "sans-serif";
 }
 
 a:visited{
-text-decoration: none;
 color: #0852ff;
 font-weight: 700;
 }
 
-.button {
-  margin: 3% auto;
-  padding: 2px;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid #888888;
-}
-
-.button:focus{
-  border: 1px solid #000000;
-}
-
-.ttls{
-font-size: 10pt;
-font-weight: 700;
-margin-right: 20px;
-}
-
-.nowbtn{
-width: 100%;
-justify-content: space-between;
-align-items: center;
-text-align: right;
-}
-
-.addTo{
-width: 100%;
-justify-content: flex-end;
-text-align: right;
-}
-
-.addTo input{
-margin-left: 8px;
-}
-
-.addTo label{
-margin-left: 8px;
-}
-
-.addToApply{
-margin-bottom: 10px;
-width: 100%;
-text-align: right;
-}
-
-.switch{
-width: 100%;
-margin-top: 6px;
-text-align: right;
-}
-
-.btn{
-border: 1px solid #888888;
-background-color: #31B0D5;
-color: #f8f8f8;
-padding: 3px 5px 3px 5px;
-border-radius: 4px;
-margin: 0px 0px 0px 0px;
-font-family: "sans-serif";
-}
-
-.btn:active{
-border-color: #888888;
-}
-
-input[type=checkbox]{
-display: none;
-}
-
-
-input[type=checkbox]+.btn{
-background-color: black;
-color: #888888;
-}
-
-input[type=checkbox]:checked+.btn{
-background-color: #31B0D5;
-color: #ffffff;
-}
-
-#tgl:checked+.btn::before{
-content: "auto prune";
-}
-
-#tgl+.btn::before{
-content: "auto prune";
-}
-
-.vids{
-display:flex;
-border-top:1px solid #888888;
-margin-top: 6px;
-padding: 10px 0px 0px 0px;
-justify-content:space-between;
-}
-
-a{
-font-size: smaller;
-font-family: "sans-serif";
-text-decoration: none;
+#main{
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+align-items: stretch;
+border: 1px solid red;
 }
 
 .about{
@@ -148,16 +55,26 @@ margin-top: 4px;
 }
 
 .notify{
-border: 1px solid #FFA4B2;
+border: 0px solid #FFA4B2;
 border-radius: 3px;
 background-color: #FFD2D9;
-padding: 4px 4px 4px 4px;
 color: #FF3B5A;
 text-align: center;
 margin-bottom: 0px;
 opacity: 0;
 height: auto;
 max-height: 0px;
+}
+
+#keys{
+display:flex;
+flex-direction: row;
+justify-content: space-evenly;
+}
+
+#keys > div{
+display:flex;
+flex-direction: row;
 }
 
 #fadeOut{
