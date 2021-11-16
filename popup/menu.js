@@ -1,4 +1,6 @@
 
+
+
 function startListen(){
   document.addEventListener("click", (e) => {
     switch(e.target.name){
@@ -6,7 +8,7 @@ function startListen(){
         chrome.runtime.openOptionsPage();
       break;
       case 'donate':
-        chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?butWhyMod'});
+        chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
       break;
       default:
       break;
@@ -18,5 +20,8 @@ function startListen(){
 
 
 //set the checkbox from the config
-chrome.storage.local.get(null,(item) => {
+chrome.storage.local.get(null,(d) => {
+console.log(d); 
 });
+
+startListen();
