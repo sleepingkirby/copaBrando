@@ -19,7 +19,6 @@
   //pass in mouseover event and settings to evaluate if button pressed matches settings.
   function altKeyPrssd(e, btns){
   var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
-
     for(let k in btns){
       if(btns[k]!=e[k+"Key"]){
         return false;
@@ -29,7 +28,9 @@
   }
 
   function keyUpPrssd(e, btns){
-    if(!btns.hasOwnProperty("key")||!btns.key||btns.key===""||btns.key===undefined){
+  
+    if(!"key" in e ||!e.key||e.key===""||e.key===undefined){
+    console.log("failed");
     return false;
     }
   var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
@@ -72,26 +73,23 @@ pre:
 post:
 ---------------------------*/
   function mouseOvrFnc(e){
-  console.log("======================>>");
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck?tmpStack.pop():stack.pop();
+    window.focus();
       if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
       e.target.value=txt;
       }
       else if(txt&&e.target.getAttribute("contentEditable")){
       e.target.innerText=txt;
       }
-    console.log(stack);
     pstSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
-  
+
     if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
     let txt= e.target.childNodes[0].textContent;
-    console.log("=============>>");
-    //console.log(txt);
+    window.focus();
     stack.push(txt);
-    console.log(stack);
     cpSt = true;
     chrome.runtime.sendMessage({'num':stack.length});
     }
@@ -99,7 +97,7 @@ post:
   
   //terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
   function termState(e){
-    if(altKeyPrssd(e,settings.pstKeys)&&pstSt){
+    if(keyUpPrssd(e,settings.pstKeys)&&pstSt){
     //release paste key
     pstSt=false;      
       if(settings.keepStck){
@@ -111,8 +109,8 @@ post:
       chrome.storage.local.set(tmp,(d)=>{});
       }
     }
-
-    if(altKeyPrssd(e,settings.cpKeys)&&cpSt){
+ 
+    if(keyUpPrssd(e,settings.cpKeys)&&cpSt){
     //release copy key
     cpSt=false;
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
