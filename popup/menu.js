@@ -3,6 +3,22 @@
 
 function startListen(){
   document.addEventListener("click", (e) => {
+  var d={};
+    if(e.target.getAttribute("action")=="updt"){
+      switch(e.target.tagName){
+      case 'textarea':
+      d={'stcks':{}};
+      d.stcks[document.getElementById("prflSlct").value]=document.getElementById("stackTA").value;
+        chrome.storage.local.set(d, (e)=>{});
+      break;
+      default:
+        if(e.target.id!=""&&e.target.name!=undefined&&e.target.name!=""){
+        d[e.target.name]=document.getElementById(e.target.id).value;
+        chrome.storage.local.set(d, (e)=>{console.log(e);});
+        }
+      break;
+      }
+    }
     switch(e.target.name){
       case 'settings':
         chrome.runtime.openOptionsPage();
@@ -14,7 +30,6 @@ function startListen(){
       break;
     }
   });
-
 }
 
 
@@ -50,7 +65,6 @@ var rtrn="";
   }
 var b="";
   for( i in arr){
-  console.log(i);
   rtrn+=b+transNL(arr[i]);
   b="\n";
   }
@@ -67,13 +81,20 @@ return str.split("\n");
 
 //set the checkbox from the config
 chrome.storage.local.get(null,(d) => {
+  //current stack
+  document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
+  console.log("------------------------>>");
+  console.log(d.stcks);
+  document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
+  document.getElementById("keepInpt").checked=d.keepStck;
 
-//current stack
-document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
-console.log("------------------------>>");
-console.log(d.stcks);
-document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
+  document.getElementById("cpKeysCtrl").checked=d.cpKeys.ctrl;
+  document.getElementById("cpKeysAlt").checked=d.cpKeys.alt;
+  document.getElementById("cpKeysShift").checked=d.cpKeys.shift;
 
+  document.getElementById("pstKeysCtrl").checked=d.pstKeys.ctrl;
+  document.getElementById("pstKeysAlt").checked=d.pstKeys.alt;
+  document.getElementById("pstKeysShift").checked=d.pstKeys.shift;
 });
 
 startListen();

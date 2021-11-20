@@ -15,32 +15,32 @@
     <div class="notify"></div>
 
     <div id="prfl">
-      <select id="prflSlct">
+      <select id="prflSlct" action="updt" name="curStck">
       </select>
     </div>
 
     <div id="stack">
-    <textarea id="stackTA"></textarea>
+    <textarea id="stackTA" action="updt" name="curStck"></textarea>
     </div>
 
     <div id="keep">
-      <input type="checkbox" id="keepInpt" name="keepInpt" />
+      <input type="checkbox" id="keepInpt" action="updt" name="keepStck" />
       <div>Keep</div>
     </div>
 
     <div id="keys">
       <div>
       <div>copy</div>
-      <div><input name="cpKeys" type="checkbox" value="ctrl"/><div>ctrl</div></div>
-      <div><input name="cpKeys" type="checkbox" value="alt"/><div>alt</div></div>
-      <div><input name="cpKeys" type="checkbox" value="shift"/><div>shift</div></div>
+      <div><input id="cpKeysCtrl" name="cpKeysCtrl" type="checkbox" value="ctrl"/><div>ctrl</div></div>
+      <div><input id="cpKeysAlt" name="cpKeysAlt" type="checkbox" value="alt"/><div>alt</div></div>
+      <div><input id="cpKeysShift" name="cpKeysShift" type="checkbox" value="shift"/><div>shift</div></div>
       </div>
 
       <div>
       <div>paste</div>
-      <div><input name="pstKeys" type="checkbox" value="ctrl"/><span>ctrl</span></div>
-      <div><input name="pstKeys" type="checkbox" value="alt"/><span>alt</span></div>
-      <div><input name="pstKeys" type="checkbox" value="shift"/><span>shift</span></div>
+      <div><input id="pstKeysCtrl" name="pstKeysCtrl" type="checkbox" value="ctrl"/><span>ctrl</span></div>
+      <div><input id="pstKeysAlt" name="pstKeysAlt" type="checkbox" value="alt"/><span>alt</span></div>
+      <div><input id="pstKeysShift" name="pstKeysShift" type="checkbox" value="shift"/><span>shift</span></div>
       </div>
     </div>
 

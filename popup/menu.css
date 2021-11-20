@@ -26,6 +26,11 @@ input{
 margin: 0px 4px 0px 4px;
 }
 
+textarea{
+text-overflow:clip;
+white-space: nowrap;
+}
+
 a{
 text-decoration: none;
 color: #0852ff;
