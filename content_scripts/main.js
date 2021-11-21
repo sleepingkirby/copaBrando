@@ -33,7 +33,8 @@
     console.log("failed");
     return false;
     }
-  var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
+  //shift+alt = meta
+  var tr={"control":"ctrl", "alt":"alt", "shift":"shift", "meta":"alt"};
     //if main button pressed (after translation) isn't in the list of buttons pressed, it automatically fails.
     //keyup HAS to have e.key. And if we're saying that all of btns HAS to match to be true and e.key isn't in btns
     //it has to fail.
@@ -76,6 +77,7 @@ post:
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck?tmpStack.pop():stack.pop();
     window.focus();
+    console.log("paste: "+txt);  
       if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
       e.target.value=txt;
       }
@@ -87,10 +89,20 @@ post:
     }
 
     if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
-    let txt= e.target.childNodes[0].textContent;
     window.focus();
-    stack.push(txt);
-    cpSt = true;
+    let txt=null;
+      if(e.target.childNodes.length>=1){ 
+      txt= e.target.childNodes[0].textContent;
+      console.log("copy: "+txt);  
+      stack.push(txt);
+      cpSt = true;
+      }
+      else{
+      txt= e.target.value;
+      console.log("copy: "+txt);  
+      stack.push(txt);
+      cpSt = true;
+      }
     chrome.runtime.sendMessage({'num':stack.length});
     }
   }
@@ -106,7 +118,10 @@ post:
       else{
       var tmp={"stcks":{}};
       tmp["stcks"][settings.curStck]=stack;
-      chrome.storage.local.set(tmp,(d)=>{});
+      console.log("==== termState paste=====>>");
+      console.log(tmp);
+      console.log(stack);
+      chrome.storage.local.set(tmp,(d)=>{updtSttng();});
       }
     }
  
@@ -117,7 +132,10 @@ post:
       if(!settings.keepStck){
       var tmp={"stcks":{}};
       tmp["stcks"][settings.curStck]=stack;
-        chrome.storage.local.set(tmp,(d)=>{});
+      console.log("==== termState copy=====>>");
+      console.log(tmp);
+      console.log(stack);
+      chrome.storage.local.set(tmp,(d)=>{updtSttng();});
       }
     }
   }

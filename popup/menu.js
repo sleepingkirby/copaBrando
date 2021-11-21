@@ -1,30 +1,63 @@
 
+function actTabUpdt(){
+  chrome.tabs.query({active:true, currentWindow:true},function(tabs){
+    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("chrome")==0){
+    console.log("null");
+    return null;
+    }
+    chrome.tabs.sendMessage(tabs[0].id, {action:"update settings"});
+  });
+}
 
 
 function startListen(){
   document.addEventListener("click", (e) => {
   var d={};
-    if(e.target.getAttribute("action")=="updt"){
-      switch(e.target.tagName){
-      case 'textarea':
-      d={'stcks':{}};
-      d.stcks[document.getElementById("prflSlct").value]=document.getElementById("stackTA").value;
-        chrome.storage.local.set(d, (e)=>{});
-      break;
-      default:
-        if(e.target.id!=""&&e.target.name!=undefined&&e.target.name!=""){
-        d[e.target.name]=document.getElementById(e.target.id).value;
-        chrome.storage.local.set(d, (e)=>{console.log(e);});
+    switch(e.target.getAttribute("act")){
+      case "updt":
+        switch(e.target.tagName.toLocaleLowerCase()){
+        case 'textarea':
+        d={'stcks':{}};
+        d.stcks[document.getElementById("prflSlct").value]=strBlck2Arr(document.getElementById("stackTA").value);
+          chrome.storage.local.set(d, (e)=>{});
+        break;
+        case 'input':
+          if(e.target.id!=""&&e.target.name!=undefined&&e.target.name!=""){
+            switch(e.target.type){
+            case 'checkbox':
+            var subname=e.target.getAttribute("subname");
+              chrome.storage.local.get(null, (d)=>{
+                if(subname){
+                d[e.target.name][subname]=document.getElementById(e.target.id).checked;
+                }
+                else{
+                d[e.target.name]=document.getElementById(e.target.id).checked;
+                }
+              chrome.storage.local.set(d, (err)=>{actTabUpdt();});
+              });
+            break;
+            default:
+            d[e.target.name]=document.getElementById(e.target.id).value;
+            chrome.storage.local.set(d, (e)=>{actTabUpdt();});
+            break;
+            }
+          }
+        break;
+        default:
+        break;
         }
       break;
-      }
-    }
-    switch(e.target.name){
-      case 'settings':
-        chrome.runtime.openOptionsPage();
-      break;
-      case 'donate':
-        chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
+      case "openLink":
+        switch(e.target.name){
+          case 'settings':
+            chrome.runtime.openOptionsPage();
+          break;
+          case 'donate':
+            chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
+          break;
+          default:
+          break;
+        }
       break;
       default:
       break;
@@ -83,8 +116,6 @@ return str.split("\n");
 chrome.storage.local.get(null,(d) => {
   //current stack
   document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
-  console.log("------------------------>>");
-  console.log(d.stcks);
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
   document.getElementById("keepInpt").checked=d.keepStck;
 

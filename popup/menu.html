@@ -15,40 +15,40 @@
     <div class="notify"></div>
 
     <div id="prfl">
-      <select id="prflSlct" action="updt" name="curStck">
+      <select id="prflSlct" act="updt" name="curStck">
       </select>
     </div>
 
     <div id="stack">
-    <textarea id="stackTA" action="updt" name="curStck"></textarea>
+    <textarea id="stackTA" act="updt" name="curStck"></textarea>
     </div>
 
     <div id="keep">
-      <input type="checkbox" id="keepInpt" action="updt" name="keepStck" />
+      <input type="checkbox" id="keepInpt" act="updt" name="keepStck" />
       <div>Keep</div>
     </div>
 
     <div id="keys">
       <div>
       <div>copy</div>
-      <div><input id="cpKeysCtrl" name="cpKeysCtrl" type="checkbox" value="ctrl"/><div>ctrl</div></div>
-      <div><input id="cpKeysAlt" name="cpKeysAlt" type="checkbox" value="alt"/><div>alt</div></div>
-      <div><input id="cpKeysShift" name="cpKeysShift" type="checkbox" value="shift"/><div>shift</div></div>
+      <div><input id="cpKeysCtrl" name="cpKeys" type="checkbox" subname="ctrl" act="updt" /><div>ctrl</div></div>
+      <div><input id="cpKeysAlt" name="cpKeys" type="checkbox" subname="alt" act="updt" /><div>alt</div></div>
+      <div><input id="cpKeysShift" name="cpKeys" type="checkbox" subname="shift" act="updt" /><div>shift</div></div>
       </div>
 
       <div>
       <div>paste</div>
-      <div><input id="pstKeysCtrl" name="pstKeysCtrl" type="checkbox" value="ctrl"/><span>ctrl</span></div>
-      <div><input id="pstKeysAlt" name="pstKeysAlt" type="checkbox" value="alt"/><span>alt</span></div>
-      <div><input id="pstKeysShift" name="pstKeysShift" type="checkbox" value="shift"/><span>shift</span></div>
+      <div><input id="pstKeysCtrl" name="pstKeys" type="checkbox" subname="ctrl" act="updt" /><span>ctrl</span></div>
+      <div><input id="pstKeysAlt" name="pstKeys" type="checkbox" subname="alt" act="updt" /><span>alt</span></div>
+      <div><input id="pstKeysShift" name="pstKeys" type="checkbox" subname="shift" act="updt" /><span>shift</span></div>
       </div>
     </div>
 
   </div>
 
   <div class="about">
-  <a href="" name="settings">settings</a>
-  <a href="" name="donate">donate</a>
+  <a href="" name="settings" act="openLink" >settings</a>
+  <a href="" name="donate" act="openLink" >donate</a>
   </div>
   <script src="menu.js"> </script>
 </body>
