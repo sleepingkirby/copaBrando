@@ -61,8 +61,11 @@
   //call to update settings variable.
   function updtSttng(bool=true){
     chrome.storage.local.get(null, (d)=>{
-    settings=d;
-    stack=d.stcks[d.curStck].splice();
+
+    settings=Object.assign({},d);
+    console.log(d);
+    console.log(settings);
+    stack=d.stcks[d.curStck].slice();
       if(bool){
       chrome.runtime.sendMessage({'num':stack.length});
       }
@@ -126,10 +129,10 @@ post:
       chrome.runtime.sendMessage({'num':sndNum});
       }
       else{
-      var tmp={"stcks":{}};
-      tmp["stcks"][settings.curStck]=stack;
+      settings["stcks"][settings.curStck]=stack;
       console.log("==== termState paste=====>>");
-      console.log(tmp);
+      console.log(settings);
+      console.log(settings.curStck);
       console.log(stack);
       chrome.storage.local.set(tmp,(d)=>{updtSttng();});
       }

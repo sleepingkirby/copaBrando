@@ -32,6 +32,7 @@ function startListen(){
   //drop down change
   document.getElementById("prflSlct").oninput=function(e){
     chrome.storage.local.get(null, (d)=>{
+    console.log(d);
     d.curStck=e.target.value;
       chrome.storage.local.set(d, (e)=>{
       actTabMsg("update settings");
@@ -95,8 +96,11 @@ function startListen(){
             }
             else{
             d.stcks[nm]=[];
+            console.log(d);
+            console.log(d.stcks);
               chrome.storage.local.set(d,(e)=>{
               notify('Profile: "'+nm+'" added.');
+              document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
               actTabMsg("update settings");
               });
             }
