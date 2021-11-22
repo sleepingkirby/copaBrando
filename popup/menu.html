@@ -7,14 +7,21 @@
   </head>
 
 <body>
-  <div class="notify">
+  <div id="delPrflMod" class="delPrflMod">
+    <div></div>
+    <div>Are you sure you want to delete this profile?</div>
+    <div><div class="btn" act="delPrfl" >yes</div><div class="btn" act="cnclDelPrflMod" >no</div></div>
   </div>
 
   <div id="main">
-
     <div class="notify"></div>
 
     <div id="prfl">
+      <div class="shrink" style="border: 0px none; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
+        <div class="btnsmall" act="addPrfl" >+</div>
+        <input id="newPrfl"  name="newPrfl" type="text" placeholder="new profile name" />
+      </div>
+      <div class="btnsmall" act="delPrflMod" >-</div>
       <select id="prflSlct" act="updt" name="curStck">
       </select>
     </div>

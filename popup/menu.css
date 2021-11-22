@@ -15,20 +15,29 @@ display: flex;
 }
 
 input,textarea,select{
+font-family: "DejaVu Sans", Arial, sans-serif;
 font-size: 9pt;
 color: #888888;
 background-color: #000000;
 border-radius: 4px;
 font-size: 9pt;
+
 }
 
 input{
 margin: 0px 4px 0px 4px;
+min-height: 16px;
+border: 1px solid #888888;
+padding:0px 2px 0px 2px;
 }
 
 textarea{
 text-overflow:clip;
 white-space: nowrap;
+min-width: 160px;
+max-width: 720px;
+min-height:140px;
+max-height:700px;
 }
 
 a{
@@ -59,6 +68,28 @@ align-items: center;
 margin-bottom: 8px;
 }
 
+.btnsmall{
+border: 1px solid #888888;
+height: 16px;
+width: 16px;
+border-radius: 4px;
+display: flex;
+justify-content:center;
+align-items: center;
+margin-right: 4px;
+}
+
+.btn{
+border: 1px solid #888888;
+height: 16px;
+border-radius: 4px;
+display: flex;
+justify-content:center;
+align-items: center;
+margin: 0px 4px 0px 4px;
+padding: 2px 4px 2px 4px;
+}
+
 .about{
 width: 100%;
 flex-direction:column;
@@ -72,16 +103,71 @@ margin-bottom: 0px;
 margin-top: 4px;
 }
 
+.delPrflMod{
+position: absolute;
+width: calc(100% - 16px);
+height: calc(100% - 16px);
+background-color: rgba(0,0,0,0.85);
+display: none;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+text-align: center;
+z-index: 10;
+}
+
+.delPrflMod div{
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+
+.delPrflMod>div:last-child{
+display: flex;
+flex-direction: row;
+margin-top: 10px;
+}
+
 .notify{
 border: 0px solid #FFA4B2;
 border-radius: 3px;
-background-color: #FFD2D9;
-color: #FF3B5A;
+background-color: #888888;
+color: #000000;
 text-align: center;
 margin-bottom: 0px;
 opacity: 0;
 height: auto;
 max-height: 0px;
+z-index: -1;
+}
+
+.shrink{
+display: flex;
+flex-direction: row;
+justify-content: space-evenly;
+align-items: center;
+transition: all .5s ease-in-out;
+}
+
+.shrink #newPrfl{
+max-width:0px;
+width: auto;
+padding: 0px;
+border: 0px;
+margin: 0px;
+overflow: hidden;
+transition: all .5s ease-in-out;
+transition-delay: 0.7s;
+}
+
+
+.shrink:hover #newPrfl{
+max-width: 120px;
+padding: 0px 2px 0px 2px;
+border: 1px solid #888888;
+margin-right: 4px;
+transition-delay: 0s;
 }
 
 #stackTA{
@@ -129,8 +215,8 @@ margin-bottom: 0px;
 }
 
 @keyframes opac{
-0%{opacity:1; max-height: 200px; margin-bottom: 4px;}
+0%{opacity:1; max-height: 200px; margin-bottom: 4px; z-index: 1;}
 99%{opacity:0; max-height: 200px; margin-bottom: 4px;}
-100%{max-height: 0px; margin-bottom: 0px;}
+100%{max-height: 0px; margin-bottom: 0px; z-index: -1;}
 }
 

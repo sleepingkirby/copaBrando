@@ -59,11 +59,13 @@
   }
 
   //call to update settings variable.
-  function updtSttng(){
+  function updtSttng(bool=true){
     chrome.storage.local.get(null, (d)=>{
     settings=d;
-    stack=d.stcks[d.curStck];
-    chrome.runtime.sendMessage({'num':stack.length});
+    stack=d.stcks[d.curStck].splice();
+      if(bool){
+      chrome.runtime.sendMessage({'num':stack.length});
+      }
     });
   }
 
@@ -77,7 +79,7 @@ post:
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck?tmpStack.pop():stack.pop();
     window.focus();
-    console.log("paste: "+txt);  
+    console.log("paste: "+txt);
       if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
       e.target.value=txt;
       }
@@ -85,7 +87,11 @@ post:
       e.target.innerText=txt;
       }
     pstSt = true;
-    chrome.runtime.sendMessage({'num':stack.length});
+    let sndNum=stack.length;
+      if(settings.keepStck){
+      sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
+      }
+    chrome.runtime.sendMessage({'num':sndNum});
     }
 
     if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
@@ -113,7 +119,11 @@ post:
     //release paste key
     pstSt=false;      
       if(settings.keepStck){
-      tmpStack=stack;
+      console.log("keep stack");
+      tmpStack=stack.slice();
+      let sndNum=stack.length;
+      sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
+      chrome.runtime.sendMessage({'num':sndNum});
       }
       else{
       var tmp={"stcks":{}};
@@ -152,6 +162,14 @@ post:
       updtSttng();
       sendResponse(true);
       break;
+      case 'keep stack':
+      tmpStack=stack.slice();
+      console.log("keep stack msg");
+      updtSttng(false);
+      chrome.runtime.sendMessage({'num':tmpStack.length.toString()+"/"+stack.length.toString()});
+       
+      sendResponse(true);
+      break; 
       default:
       break;
     }

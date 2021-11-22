@@ -31,6 +31,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+console.log(msg.num.toString());
   if(msg.num<=0){
   chrome.browserAction.setBadgeText({text: ""});
   }
