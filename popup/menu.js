@@ -12,7 +12,6 @@ el.id="fadeOut";
 function actTabMsg(str){
   chrome.tabs.query({active:true, currentWindow:true},function(tabs){
     if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("chrome")==0){
-    console.log("null");
     return null;
     }
     chrome.tabs.sendMessage(tabs[0].id, {action:str});
@@ -32,7 +31,6 @@ function startListen(){
   //drop down change
   document.getElementById("prflSlct").oninput=function(e){
     chrome.storage.local.get(null, (d)=>{
-    console.log(d);
     d.curStck=e.target.value;
       chrome.storage.local.set(d, (e)=>{
       document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
@@ -97,8 +95,6 @@ function startListen(){
             }
             else{
             d.stcks[nm]=[];
-            console.log(d);
-            console.log(d.stcks);
               chrome.storage.local.set(d,(e)=>{
               notify('Profile: "'+nm+'" added.');
               document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
@@ -125,7 +121,6 @@ function startListen(){
           delete d.stcks[nm];
           var arr=Object.keys(d.stcks);
           d.curStck=arr.length>=1?arr[0]:""; 
-          console.log(d);
             chrome.storage.local.set(d,(e)=>{
             document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
             notify('Profile: "'+nm+'" deleted.');
@@ -137,9 +132,9 @@ function startListen(){
       break;
       case "openLink":
         switch(e.target.name){
-          case 'settings':
-            chrome.runtime.openOptionsPage();
-          break;
+          //case 'settings':
+            //chrome.runtime.openOptionsPage();
+          //break;
           case 'donate':
             chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
           break;
