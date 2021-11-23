@@ -20,7 +20,6 @@
     "default_title": "copa Brando",
     "default_popup": "popup/menu.html"
   },
-  "options_page": "options/settings.html",
   "background": {
     "scripts": ["./background.js"],
     "persistent": false

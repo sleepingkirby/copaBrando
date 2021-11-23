@@ -140,8 +140,13 @@ post:
     chrome.runtime.sendMessage({'num':stack.length});
     }
   }
-  
-  //terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
+ 
+
+  /*--------------------------------------------------
+  pre: keyUpPrssd()
+  post: updates settings, stack and/or chrome.storage.local
+  terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
+  --------------------------------------------------*/
   function termState(e){
     if(keyUpPrssd(e,settings.pstKeys)&&pstSt){
     //release paste key
