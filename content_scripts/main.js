@@ -89,8 +89,6 @@
     chrome.storage.local.get(null, (d)=>{
 
     settings=Object.assign({},d);
-    console.log(d);
-    console.log(settings);
     stack=d.stcks[d.curStck].slice();
       if(bool){
       chrome.runtime.sendMessage({'num':stack.length});
@@ -107,7 +105,7 @@ post:
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck?tmpStack.pop():stack.pop();
     window.focus();
-    console.log("paste: "+txt);
+    //console.log("paste: "+txt);
       if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
       e.target.value=txt;
       }
@@ -127,13 +125,13 @@ post:
     let txt=null;
       if(e.target.childNodes.length>=1){ 
       txt= e.target.childNodes[0].textContent;
-      console.log("copy: "+txt);  
+      //console.log("copy: "+txt);  
       stack.push(txt);
       cpSt = true;
       }
       else{
       txt= e.target.value;
-      console.log("copy: "+txt);  
+      //console.log("copy: "+txt);  
       stack.push(txt);
       cpSt = true;
       }
@@ -152,7 +150,7 @@ post:
     //release paste key
     pstSt=false;      
       if(settings.keepStck){
-      console.log("keep stack");
+      //console.log("keep stack");
       tmpStack=stack.slice();
       let sndNum=stack.length;
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
@@ -160,11 +158,13 @@ post:
       }
       else{
       settings["stcks"][settings.curStck]=stack;
+      /*
       console.log("==== termState paste=====>>");
       console.log(settings);
       console.log(settings.curStck);
       console.log(stack);
-      chrome.storage.local.set(tmp,(d)=>{updtSttng();});
+      */
+      chrome.storage.local.set(settings,(d)=>{updtSttng();});
       }
     }
  
@@ -174,9 +174,11 @@ post:
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
       if(!settings.keepStck){
       settings["stcks"][settings.curStck]=stack;
+      /*
       console.log("==== termState copy=====>>");
       console.log(settings);
       console.log(stack);
+      */
       chrome.storage.local.set(settings,(d)=>{updtSttng();});
       }
     }
