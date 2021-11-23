@@ -42,7 +42,7 @@
   ------------------------------------------------------------------------------------------------*/
   function keyUpPrssd(e, btns){
   
-    if(!"key" in e ||!e.key||e.key===""||e.key===undefined){
+    if(!"key" in e || !btns ||!e.key||e.key===""||e.key===undefined){
     console.log("failed");
     return false;
     }
@@ -198,7 +198,6 @@ post:
       break;
       case 'keep stack':
       tmpStack=stack.slice();
-      console.log("keep stack msg");
       updtSttng(false);
       chrome.runtime.sendMessage({'num':tmpStack.length.toString()+"/"+stack.length.toString()});
        
