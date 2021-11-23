@@ -143,12 +143,11 @@ post:
     cpSt=false;
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
       if(!settings.keepStck){
-      var tmp={"stcks":{}};
-      tmp["stcks"][settings.curStck]=stack;
+      settings["stcks"][settings.curStck]=stack;
       console.log("==== termState copy=====>>");
-      console.log(tmp);
+      console.log(settings);
       console.log(stack);
-      chrome.storage.local.set(tmp,(d)=>{updtSttng();});
+      chrome.storage.local.set(settings,(d)=>{updtSttng();});
       }
     }
   }

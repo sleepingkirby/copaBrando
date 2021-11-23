@@ -35,6 +35,7 @@ function startListen(){
     console.log(d);
     d.curStck=e.target.value;
       chrome.storage.local.set(d, (e)=>{
+      document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
       actTabMsg("update settings");
       });
     });
