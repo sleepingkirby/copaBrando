@@ -10,13 +10,17 @@
   }
   window.hasRun = true;
 
-  var stack=[];
-  var tmpStack=[];
+  var stack=[]; //the stack that the page actually uses. chrome.storage.local is too slow to keep up nor can it keep order. I've tried
+  var tmpStack=[]; //temporary stack, for when "keep stack" is set
   var settings={}; //chrome.storage.local.get(null); to be updated when changed and then signaled (to reduce load).
   var cpSt=false; //copy state
   var pstSt=false; // paste state
 
-  //pass in mouseover event and settings to evaluate if button pressed matches settings.
+  /*------------------------------------------------------------------------------------------------
+  pre: none
+  post: none
+  pass in mouseover event and settings to evaluate if button pressed matches what's in settings
+  ------------------------------------------------------------------------------------------------*/
   function altKeyPrssd(e, btns){
   var tr={"control":"ctrl", "alt":"alt", "shift":"shift"};
     for(let k in btns){
@@ -27,6 +31,15 @@
   return true;
   }
 
+  /*------------------------------------------------------------------------------------------------
+  pre: altKeyPrssd()
+  post: none
+  params: e from event, btns with struct {"ctrl":true, "shift":true, "alt": false}
+  return: boolean
+  checks to see what buttons are released in the event "keyUp"
+  different from altKeyPrssd because the data structure for keyUp is different from
+  mouseOver. But uses altKeyPrssd() because some parts are the same.
+  ------------------------------------------------------------------------------------------------*/
   function keyUpPrssd(e, btns){
   
     if(!"key" in e ||!e.key||e.key===""||e.key===undefined){
@@ -47,7 +60,14 @@
   return altKeyPrssd(e,tmpH);
   }
 
-  //pass in e.target and settings.copyList. returns true or false on whether or not it is in list
+  
+  /*------------------------------------------------------------------------------------------------
+  pre: none
+  post: none
+  params: trgt from e.target, lst in settings.cpElBList or pstElBList, pst whether or not you're checking copy or paste
+  return: boolean
+  returns true or false on whether or not it is in ban list.
+  ------------------------------------------------------------------------------------------------*/
   function validEl(trgt, lst, pst=false){
     if(lst.hasOwnProperty(trgt.tagName.toLocaleLowerCase())){
     return false;
@@ -58,7 +78,13 @@
   return true;
   }
 
-  //call to update settings variable.
+  
+  /*------------------------------------------------------------------------------------------------
+  pre: settings and stack var exists
+  post: settings and stack updated. Also sends badge message
+  params: bool true or false, whether or not it sends the message to update the badge
+  call to update settings variable and updates, if set, updates badge
+  ------------------------------------------------------------------------------------------------*/
   function updtSttng(bool=true){
     chrome.storage.local.get(null, (d)=>{
 
@@ -72,7 +98,6 @@
     });
   }
 
-  updtSttng();
 
 /*---------------------------
 pre:
@@ -176,6 +201,9 @@ post:
       break;
     }
   }
+  
+  
+  updtSttng();
 
   document.addEventListener("mouseover", mouseOvrFnc);
   document.addEventListener("keyup", termState);
