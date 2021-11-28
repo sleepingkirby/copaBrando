@@ -20,16 +20,15 @@ function actTabMsg(str){
 
 
 function startListen(){
-  var el=document.getElementById("stackTA");
-  el.oninput=function(e){
+  document.getElementById("stackTA").oninput= (e) => {
     chrome.storage.local.get(null, (d)=>{
-    d.stcks[d.curStck]=strBlck2Arr(el.value);
+    d.stcks[d.curStck]=strBlck2Arr(e.target.value);
       chrome.storage.local.set(d,(e)=>{actTabMsg("update settings");});
     });
   }
 
   //drop down change
-  document.getElementById("prflSlct").oninput=function(e){
+  document.getElementById("prflSlct").oninput= (e) => {
     chrome.storage.local.get(null, (d)=>{
     d.curStck=e.target.value;
       chrome.storage.local.set(d, (e)=>{
@@ -45,11 +44,6 @@ function startListen(){
     switch(e.target.getAttribute("act")){
       case "updt":
         switch(e.target.tagName.toLocaleLowerCase()){
-        case 'textarea':
-        d={'stcks':{}};
-        d.stcks[document.getElementById("prflSlct").value]=strBlck2Arr(document.getElementById("stackTA").value);
-          chrome.storage.local.set(d, (e)=>{actTabMsg("update settings");});
-        break;
         case 'input':
           if(e.target.id!=""&&e.target.name!=undefined&&e.target.name!=""){
             switch(e.target.type){
@@ -167,10 +161,16 @@ return rtrn;
 }
 
 function transNL(str){
+  if(!str || str === undefined || str == "" || typeof str != "string"){
+  return str;
+  }
 return str.replaceAll("\n", '\\n');
 }
 
 function nlTrans(str){
+  if(!str || str === undefined || str == "" || typeof str != "string"){
+  return str;
+  }
 return str.replaceAll('\\n', "\n");
 }
 
