@@ -5,7 +5,7 @@ chrome.storage.local.get(null, (d) => {
   if(Object.keys(d).length <= 0){
     var settings={
     "curStck":"scratch",
-    "keepStck":false,
+    "keepStck":{"scratch":false},
     "cpKeys":{"ctrl":true, "shift":true, "alt": false},
     "pstKeys":{"ctrl":true, "shift":false, "alt": false},
     "cpElBList":{"body":true, "style":true, "script":true, "head":true, "html":true},
@@ -31,7 +31,6 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
-console.log(msg.num.toString());
   if(msg.num<=0){
   chrome.browserAction.setBadgeText({text: ""});
   }

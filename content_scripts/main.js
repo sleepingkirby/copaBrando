@@ -43,7 +43,6 @@
   function keyUpPrssd(e, btns){
   
     if(!"key" in e || !btns ||!e.key||e.key===""||e.key===undefined){
-    console.log("failed");
     return false;
     }
   //shift+alt = meta
@@ -69,7 +68,7 @@
   returns true or false on whether or not it is in ban list.
   ------------------------------------------------------------------------------------------------*/
   function validEl(trgt, lst, pst=false){
-    if(lst.hasOwnProperty(trgt.tagName.toLocaleLowerCase())){
+    if(lst && lst.hasOwnProperty(trgt.tagName.toLocaleLowerCase())){
     return false;
     }
     if(pst&&trgt.tagName.toLocaleLowerCase()!="input"&&trgt.tagName.toLocaleLowerCase()!="textarea"&&!trgt.getAttribute("contentEditable")){
@@ -78,7 +77,63 @@
   return true;
   }
 
-  
+
+  //a hack function to copy to clipboard
+  function copyHack(str){
+  var ta=document.createElement("textarea");
+  ta.textContent=str;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy', false, null);
+  document.body.removeChild(ta);
+  }
+
+
+  /*--------------------------------------------
+  pre: none
+  post:
+  sends events that makes forms that cache your input rather
+  just reading the d*mn input forms for the values
+  actually work and persist.
+          onEl.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
+        onEl.dispatchEvent(new Event('change',{bubbles:true}));
+        onEl.value=ptr;
+        onEl.dispatchEvent(new Event('change',{bubbles:true}));
+  using:
+  https://higherme.bamboohr.com/jobs/view.php?id=25&source=aWQ9MjY%3D
+  as example
+  ---------------------------------------------*/
+  function smrtFill(el, val, type, flag=true){
+
+  var vls='value';
+    switch(type){
+      case 'contentEditable':
+      vls='innerText';
+      break;
+      case 'checked':
+      vls='checked';
+      break;
+      default:
+      vls='value';
+      break;
+    }
+
+
+    if(!flag){
+    el[vls]=val;
+    return 0;
+    }
+
+    el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+    el[vls]=val;
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+    el[vls]=val;
+    return 0;
+  }
+ 
+
+ 
   /*------------------------------------------------------------------------------------------------
   pre: settings and stack var exists
   post: settings and stack updated. Also sends badge message
@@ -90,6 +145,7 @@
 
     settings=Object.assign({},d);
     stack=d.stcks[d.curStck].slice();
+    tmpStack=d.stcks[d.curStck].slice();
       if(bool){
       chrome.runtime.sendMessage({'num':stack.length});
       }
@@ -103,24 +159,27 @@ post:
 ---------------------------*/
   function mouseOvrFnc(e){
     if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
-    let txt=settings.keepStck?tmpStack.pop():stack.pop();
+    let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
     window.focus();
     //console.log("paste: "+txt);
-      if(txt&&(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea")){
-      e.target.value=txt;
-      }
-      else if(txt&&e.target.getAttribute("contentEditable")){
-      e.target.innerText=txt;
+      if(typeof txt=="string"){
+        if(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea"){
+        //smrtFill(onEl, false, 'checked', flag);
+        smrtFill(e.target, txt, 'value',true);
+        }
+        else if(e.target.getAttribute("contentEditable")){
+        smrtFill(e.target, txt, 'contentEditable',true);
+        }
       }
     pstSt = true;
     let sndNum=stack.length;
-      if(settings.keepStck){
+      if(settings.keepStck[settings.curStck]){
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
       }
     chrome.runtime.sendMessage({'num':sndNum});
     }
 
-    if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck){
+    if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck[settings.curStck]){
     window.focus();
     let txt=null;
       if(e.target.childNodes.length>=1){ 
@@ -139,6 +198,18 @@ post:
     }
   }
  
+  //what to do on selecting text
+  function mouseUpFnc(e){
+
+  let txt=window.getSelection().toString();
+    if(!settings.keepStck[settings.keepStck] && txt && typeof txt == "string" && txt!=""){
+    stack.push(txt);
+    chrome.runtime.sendMessage({'num':stack.length});
+    settings["stcks"][settings.curStck]=stack;
+    chrome.storage.local.set(settings,(d)=>{updtSttng();});
+    }
+  }
+
 
   /*--------------------------------------------------
   pre: keyUpPrssd()
@@ -149,7 +220,7 @@ post:
     if(keyUpPrssd(e,settings.pstKeys)&&pstSt){
     //release paste key
     pstSt=false;      
-      if(settings.keepStck){
+      if(settings.keepStck[settings.curStck]){
       //console.log("keep stack");
       tmpStack=stack.slice();
       let sndNum=stack.length;
@@ -172,8 +243,8 @@ post:
     //release copy key
     cpSt=false;
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
-      if(!settings.keepStck){
-      settings["stcks"][settings.curStck]=stack;
+      if(!settings.keepStck[settings.curStck]){
+      settings["stcks"][settings.curStck]=stack.slice();
       /*
       console.log("==== termState copy=====>>");
       console.log(settings);
@@ -212,6 +283,7 @@ post:
   updtSttng();
 
   document.addEventListener("mouseover", mouseOvrFnc);
+  document.addEventListener("mouseup", mouseUpFnc);
   document.addEventListener("keyup", termState);
   
   chrome.runtime.onMessage.addListener(runOnMsg);

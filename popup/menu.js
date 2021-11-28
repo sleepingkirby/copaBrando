@@ -33,6 +33,7 @@ function startListen(){
     d.curStck=e.target.value;
       chrome.storage.local.set(d, (e)=>{
       document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
+      document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
       actTabMsg("update settings");
       });
     });
@@ -53,6 +54,9 @@ function startListen(){
                 if(subname){
                 d[e.target.name][subname]=document.getElementById(e.target.id).checked;
                 }
+                else if(e.target.name=="keepStck"){
+                d[e.target.name][d.curStck]=document.getElementById(e.target.id).checked;
+                }
                 else{
                 d[e.target.name]=document.getElementById(e.target.id).checked;
                 }
@@ -60,7 +64,7 @@ function startListen(){
                   //if keepStck is turned on, make sure to tell the current page so it can
                   // set the tmpStack and set the proper badge number
                   //no need to call actTabMsg("update settings"); as "keep stack" calls it already
-                  if(d.keepStck){
+                  if(d.keepStck[d.curStck]){
                   actTabMsg("keep stack");
                   }
                   else{
@@ -89,6 +93,7 @@ function startListen(){
             }
             else{
             d.stcks[nm]=[];
+            d.keepStck[nm]=false;
               chrome.storage.local.set(d,(e)=>{
               notify('Profile: "'+nm+'" added.');
               document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
@@ -113,6 +118,7 @@ function startListen(){
         if(nm&&nm!=""&&nm!=null&&nm!=undefined){
           chrome.storage.local.get(null,(d)=>{
           delete d.stcks[nm];
+          delete d.keepStck[nm];
           var arr=Object.keys(d.stcks);
           d.curStck=arr.length>=1?arr[0]:""; 
             chrome.storage.local.set(d,(e)=>{
@@ -200,7 +206,7 @@ chrome.storage.local.get(null,(d) => {
   //current stack
   document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
-  document.getElementById("keepInpt").checked=d.keepStck;
+  document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
 
   document.getElementById("cpKeysCtrl").checked=d.cpKeys.ctrl;
   document.getElementById("cpKeysAlt").checked=d.cpKeys.alt;
