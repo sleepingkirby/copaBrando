@@ -158,7 +158,7 @@ pre:
 post:
 ---------------------------*/
   function mouseOvrFnc(e){
-    if(e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
+    if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
     window.focus();
     //console.log("paste: "+txt);
@@ -179,7 +179,7 @@ post:
     chrome.runtime.sendMessage({'num':sndNum});
     }
 
-    if(e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&&!settings.keepStck[settings.curStck]){
+    if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
     window.focus();
     let txt=null;
       if(e.target.childNodes.length>=1){ 
@@ -202,10 +202,10 @@ post:
   function mouseUpFnc(e){
 
   let txt=window.getSelection().toString();
-    if(!settings.keepStck[settings.keepStck] && txt && typeof txt == "string" && txt!=""){
+    if( settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
     stack.push(txt);
     chrome.runtime.sendMessage({'num':stack.length});
-    settings["stcks"][settings.curStck]=stack;
+    settings.stcks[settings.curStck]=stack;
     chrome.storage.local.set(settings,(d)=>{updtSttng();});
     }
   }

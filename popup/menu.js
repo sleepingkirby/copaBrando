@@ -52,13 +52,13 @@ function startListen(){
             var subname=e.target.getAttribute("subname");
               chrome.storage.local.get(null, (d)=>{
                 if(subname){
-                d[e.target.name][subname]=document.getElementById(e.target.id).checked;
+                d[e.target.name][subname]=e.target.checked;
                 }
                 else if(e.target.name=="keepStck"){
-                d[e.target.name][d.curStck]=document.getElementById(e.target.id).checked;
+                d[e.target.name][d.curStck]=e.target.checked;
                 }
                 else{
-                d[e.target.name]=document.getElementById(e.target.id).checked;
+                d[e.target.name]=e.target.checked;
                 }
                 chrome.storage.local.set(d, (err)=>{
                   //if keepStck is turned on, make sure to tell the current page so it can
@@ -74,7 +74,7 @@ function startListen(){
               });
             break;
             default:
-            d[e.target.name]=document.getElementById(e.target.id).value;
+            d[e.target.name]=e.target.value;
             chrome.storage.local.set(d, (e)=>{actTabMsg("update settings");});
             break;
             }
@@ -207,6 +207,7 @@ chrome.storage.local.get(null,(d) => {
   document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
   document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
+  document.getElementById("hghlghtCpInpt").checked=d.hghlghtCp;
 
   document.getElementById("cpKeysCtrl").checked=d.cpKeys.ctrl;
   document.getElementById("cpKeysAlt").checked=d.cpKeys.alt;
