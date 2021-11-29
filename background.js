@@ -10,9 +10,10 @@ chrome.storage.local.get(null, (d) => {
     "pstKeys":{"ctrl":true, "shift":false, "alt": false},
     "cpElBList":{"body":true, "style":true, "script":true, "head":true, "html":true},
     "pstElBList":{},
-    "stcks":{
+      "stcks":{
       "scratch":[]
-      }
+      },
+    "hghlghtCp": false  
     };
     chrome.storage.local.set(settings, (d)=>{});
   }
