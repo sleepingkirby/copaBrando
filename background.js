@@ -13,7 +13,10 @@ chrome.storage.local.get(null, (d) => {
       "stcks":{
       "scratch":[]
       },
-    "hghlghtCp": false  
+    "hghlghtCp": false,
+      "shrtCts":{
+      "pst":{"v":true,"alt":true}
+      }
     };
     chrome.storage.local.set(settings, (d)=>{});
   }

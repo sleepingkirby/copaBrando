@@ -50,12 +50,16 @@
     //if main button pressed (after translation) isn't in the list of buttons pressed, it automatically fails.
     //keyup HAS to have e.key. And if we're saying that all of btns HAS to match to be true and e.key isn't in btns
     //it has to fail.
-    if(!btns.hasOwnProperty(tr[e.key.toLocaleLowerCase()]) || btns[tr[e.key.toLocaleLowerCase()]]!=true){
+    if(tr.hasOwnProperty(e.key.toLocaleLowerCase()) && (!btns.hasOwnProperty(tr[e.key.toLocaleLowerCase()]) || btns[tr[e.key.toLocaleLowerCase()]]!=true)){
     return false;
     }
-
   var tmpH=Object.assign({}, btns);
-  delete tmpH[tr[e.key.toLocaleLowerCase()]]; //it e.key does match, not need to check it again.
+    if(tr.hasOwnProperty(e.key.toLocaleLowerCase())){
+    delete tmpH[tr[e.key.toLocaleLowerCase()]]; //it e.key does match, not need to check it again.
+    }
+    else{
+    delete tmpH[e.key.toLocaleLowerCase()]; //it e.key does match, not need to check it again.
+    }
   return altKeyPrssd(e,tmpH);
   }
 
@@ -103,7 +107,7 @@
   https://higherme.bamboohr.com/jobs/view.php?id=25&source=aWQ9MjY%3D
   as example
   ---------------------------------------------*/
-  function smrtFill(el, val, type, flag=true){
+  function smrtFill(el, val, type, flag=true, appnd=false){
 
   var vls='value';
     switch(type){
@@ -118,6 +122,15 @@
       break;
     }
 
+    if(appnd && vls=="value"){
+
+      el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
+      el.dispatchEvent(new Event('change',{bubbles:true}));
+      el[vls]=el[vls];
+      el.dispatchEvent(new Event('change',{bubbles:true}));
+      el[vls]+=val;
+      return 0;
+    }
 
     if(!flag){
     el[vls]=val;
@@ -197,10 +210,48 @@ post:
     chrome.runtime.sendMessage({'num':stack.length});
     }
   }
- 
-  //what to do on selecting text
-  function mouseUpFnc(e){
 
+
+  /*-----------------------------------------------
+  pre:keyYpPrssd(), validEl(), smrtFill()
+  post: stack popped, chrome.storage updated
+  activate on key press. Currently, only 
+  -----------------------------------------------*/
+  function keysDwn(e){
+    if(e && keyUpPrssd(e,settings.shrtCts.pst) && validEl(e.target, settings.pstElBList, true)){
+    var txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack.pop();
+    window.focus();
+    //console.log("paste: "+txt);
+      if(typeof txt=="string"){
+        if(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea"){
+        //smrtFill(onEl, false, 'checked', flag);
+        smrtFill(e.target, txt, 'value',true, true);
+        }
+        else if(e.target.getAttribute("contentEditable")){
+        smrtFill(e.target, txt, 'contentEditable',true, true);
+        }
+      }
+    pstSt = true;
+    let sndNum=stack.length;
+      if(settings.keepStck[settings.curStck]){
+      sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
+      }
+      else{
+      settings["stcks"][settings.curStck]=stack.slice();
+      chrome.storage.local.set(settings,(d)=>{updtSttng();});
+      }
+    chrome.runtime.sendMessage({'num':sndNum});
+    }
+  }
+
+
+  /*------------------------------------------------
+  pre:none
+  post: stack updated and chrome.storage 
+  what to do on selecting text, right now, copy highlight to stack
+  and chrome.storage
+  ------------------------------------------------*/
+  function mouseUpFnc(e){
   let txt=window.getSelection().toString();
     if( settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
     stack.push(txt);
@@ -228,7 +279,7 @@ post:
       chrome.runtime.sendMessage({'num':sndNum});
       }
       else{
-      settings["stcks"][settings.curStck]=stack;
+      settings["stcks"][settings.curStck]=stack.slice();
       /*
       console.log("==== termState paste=====>>");
       console.log(settings);
@@ -285,6 +336,7 @@ post:
   document.addEventListener("mouseover", mouseOvrFnc);
   document.addEventListener("mouseup", mouseUpFnc);
   document.addEventListener("keyup", termState);
+  document.addEventListener("keydown", keysDwn);
   
   chrome.runtime.onMessage.addListener(runOnMsg);
 })();
