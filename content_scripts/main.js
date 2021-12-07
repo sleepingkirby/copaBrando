@@ -289,14 +289,15 @@ post:
       chrome.storage.local.set(settings,(d)=>{updtSttng();});
       }
     }
- 
+
+
     if(keyUpPrssd(e,settings.cpKeys)&&cpSt){
     //release copy key
     cpSt=false;
       //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
       if(!settings.keepStck[settings.curStck]){
       settings["stcks"][settings.curStck]=stack.slice();
-      /*
+      /*  
       console.log("==== termState copy=====>>");
       console.log(settings);
       console.log(stack);

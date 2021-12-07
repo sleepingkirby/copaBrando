@@ -14,13 +14,14 @@ display:flex;
 flex-direction: column;
 }
 
-div > div{
+div > input{
 border: 1px solid #aaaaaa;
 border-radius: 4px;
 padding: 4px;
 max-width: 100px;
 min-width: 80px;
-
+background-color: black;
+color: #aaaaaa;
 }
 
 </style>
@@ -38,18 +39,18 @@ min-width: 80px;
 <script>
 var el=document.getElementById("fields");
 var arr=[];
-arr.push("name");
-arr.push("address");
-arr.push("email");
-arr.push("phone");
-arr.push("things");
-arr.push("stuff");
-arr.push("values");
-arr.push("other stuff");
+arr.push("");
+arr.push("");
+arr.push("");
+arr.push("");
+arr.push("");
+arr.push("");
+arr.push("");
+arr.push("");
 
 var tmp="";
 for(i in arr){
-tmp+="<div>"+arr[i]+"</div>\n";
+tmp+="<input type=\"text\" />\n";
 }
 el.innerHTML=tmp;
 
