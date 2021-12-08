@@ -192,7 +192,7 @@ post:
     chrome.runtime.sendMessage({'num':sndNum});
     }
 
-    if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
+    if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck && settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
     window.focus();
     let txt=null;
       if(e.target.childNodes.length>=1){ 
