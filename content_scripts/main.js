@@ -84,12 +84,24 @@
 
   //a hack function to copy to clipboard
   function copyHack(str){
+  /*
   var ta=document.createElement("textarea");
   ta.textContent=str;
   document.body.appendChild(ta);
   ta.select();
   document.execCommand('copy', false, null);
   document.body.removeChild(ta);
+  */
+    navigator.clipboard.writeText(str).then(
+      (e)=>{
+      console.log('Copied "'+str+'"');
+      },
+      (err)=>{
+        if(err=="DOMException: Document is not focused."||e=="NotAllowedError: Document is not focused."){
+        console.log('Click on page to begin copying');
+        }
+        console.log('copaBrando: function copyHack() failed to copy. Error: "'+err+'"');
+      });
   }
 
 
@@ -211,6 +223,59 @@ post:
     }
   }
 
+  /*---------------------------------------------
+  pre: global variable stack and settings set, updtSttng();
+  post: chrome.storage.local updated from local settings
+  sets the chrome.storage.local to local settings.
+  ---------------------------------------------*/
+  function updtChromeStorage(){
+  let sndNum=stack.length;
+    if(settings.keepStck[settings.curStck]){
+    sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
+    }
+    else{
+    settings["stcks"][settings.curStck]=stack.slice();
+    chrome.storage.local.set(settings,(d)=>{updtSttng();});
+    }
+  chrome.runtime.sendMessage({'num':sndNum});
+  }
+
+
+  /*---------------------------------------------
+  pre:
+  post:
+  this happens AFTER paste happens 
+  ---------------------------------------------*/
+  function myPst(e){
+    if(!settings.hghlghtCp){
+    return null;
+    }
+    
+    
+    var clpDt=null;
+    var oldtxt=null;
+    var txt=null;
+
+    //e.stopPropagation();
+    //e.preventDefault();
+    var types = e.clipboardData.types;
+    clpDt = e.clipboardData || window.clipboardData;
+
+
+    //if not string, do nothing. Let it naturally paste
+    if(!(types instanceof DOMStringList) || !types.contains("text/html")){
+    settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack.pop();
+    }
+
+    oldtxt = clpDt.getData('Text');
+    txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack[stack.length-1];
+    
+      if(txt){
+      copyHack(txt);
+      }
+    updtChromeStorage();    
+  }
+
 
   /*-----------------------------------------------
   pre:keyYpPrssd(), validEl(), smrtFill()
@@ -255,6 +320,7 @@ post:
   let txt=window.getSelection().toString();
     if( settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
     stack.push(txt);
+    copyHack(txt);
     chrome.runtime.sendMessage({'num':stack.length});
     settings.stcks[settings.curStck]=stack;
     chrome.storage.local.set(settings,(d)=>{updtSttng();});
@@ -338,10 +404,7 @@ post:
   document.addEventListener("mouseup", mouseUpFnc);
   document.addEventListener("keyup", termState);
   document.addEventListener("keydown", keysDwn);
+  document.addEventListener("paste", myPst);
   
   chrome.runtime.onMessage.addListener(runOnMsg);
 })();
-
-
-
-
