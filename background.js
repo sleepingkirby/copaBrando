@@ -14,6 +14,7 @@ chrome.storage.local.get(null, (d) => {
       "scratch":[]
       },
     "hghlghtCp": false,
+    "pstFrmStck": false,
       "shrtCts":{
       "pst":{"v":true,"alt":true}
       }
@@ -55,4 +56,3 @@ chrome.runtime.onInstalled.addListener(function() {
     }]);
   });
 });
-
