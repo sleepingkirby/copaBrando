@@ -208,6 +208,7 @@ chrome.storage.local.get(null,(d) => {
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
   document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
   document.getElementById("hghlghtCpInpt").checked=d.hghlghtCp;
+  document.getElementById("pstFrmStckInpt").checked=d.pstFrmStck;
 
   document.getElementById("cpKeysCtrl").checked=d.cpKeys.ctrl;
   document.getElementById("cpKeysAlt").checked=d.cpKeys.alt;
