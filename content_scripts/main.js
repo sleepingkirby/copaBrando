@@ -247,7 +247,7 @@ post:
   this happens AFTER paste happens 
   ---------------------------------------------*/
   function myPst(e){
-    if(!settings.hghlghtCp){
+    if(!settings.pstFrmStck){
     return null;
     }
     
