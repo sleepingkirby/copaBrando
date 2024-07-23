@@ -183,7 +183,6 @@ post:
 ---------------------------*/
   function mouseOvrFnc(e){
     if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
-    console.log("asfdasdf");
     let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
     window.focus();
     //console.log("paste: "+txt);
@@ -207,18 +206,20 @@ post:
     if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck && settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
     window.focus();
     let txt=null;
-      if(e.target.childNodes.length>=1){ 
-      txt= e.target.childNodes[0].textContent;
-      //console.log("copy: "+txt);  
-      stack.push(txt);
-      cpSt = true;
+    let tagNm=e.target.tagName.toLocaleLowerCase();
+      if(tagNm=="input"||tagNm=="textarea"){
+      txt= e.target.value;
+      }
+      else if(e.target.childNodes.length>=1){
+      txt=e.target.childNodes[0].textContent;
       }
       else{
       txt= e.target.value;
-      //console.log("copy: "+txt);  
-      stack.push(txt);
-      cpSt = true;
       }
+    //console.log(tagNm,", copy: ",txt); 
+    stack.push(txt);
+    cpSt = true;
+
     browser.runtime.sendMessage({'num':stack.length});
     }
   }
