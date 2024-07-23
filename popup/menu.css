@@ -21,7 +21,6 @@ color: #888888;
 background-color: #000000;
 border-radius: 4px;
 font-size: 9pt;
-
 }
 
 input{
@@ -60,6 +59,10 @@ justify-content: flex-end;
 align-items: stretch;
 }
 
+#main > div{
+display:flex;
+}
+
 #main > :not(div:first-child,div:last-child){
 display: flex;
 flex-direction: row;
@@ -76,7 +79,6 @@ border-radius: 4px;
 display: flex;
 justify-content:center;
 align-items: center;
-margin-right: 4px;
 }
 
 .btn{
@@ -142,6 +144,15 @@ max-height: 0px;
 z-index: -1;
 }
 
+#prfl{
+display:flex;
+flex-direction:row;
+justify-content:flex-end;
+justify-self: flex-end;
+align-items:center;
+width:fit-content;
+}
+
 .shrink{
 display: flex;
 flex-direction: row;
@@ -165,8 +176,8 @@ transition-delay: 0.7s;
 .shrink:hover #newPrfl{
 max-width: 120px;
 padding: 0px 2px 0px 2px;
+margin-left: 4px;
 border: 1px solid #888888;
-margin-right: 4px;
 transition-delay: 0s;
 }
 
