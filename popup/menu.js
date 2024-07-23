@@ -10,28 +10,28 @@ el.id="fadeOut";
 }
 
 function actTabMsg(str){
-  chrome.tabs.query({active:true, currentWindow:true},function(tabs){
-    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("chrome")==0){
+  browser.tabs.query({active:true, currentWindow:true},function(tabs){
+    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("browser")==0){
     return null;
     }
-    chrome.tabs.sendMessage(tabs[0].id, {action:str});
+    browser.tabs.sendMessage(tabs[0].id, {action:str});
   });
 }
 
 
 function startListen(){
   document.getElementById("stackTA").oninput= (e) => {
-    chrome.storage.local.get(null, (d)=>{
+    browser.storage.local.get().then((d)=>{
     d.stcks[d.curStck]=strBlck2Arr(e.target.value);
-      chrome.storage.local.set(d,(e)=>{actTabMsg("update settings");});
+      browser.storage.local.set(d).then((e)=>{actTabMsg("update settings");});
     });
   }
 
   //drop down change
   document.getElementById("prflSlct").oninput= (e) => {
-    chrome.storage.local.get(null, (d)=>{
+    browser.storage.local.get().then((d)=>{
     d.curStck=e.target.value;
-      chrome.storage.local.set(d, (e)=>{
+      browser.storage.local.set(d).then((e)=>{
       document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
       document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
       actTabMsg("update settings");
@@ -50,7 +50,7 @@ function startListen(){
             switch(e.target.type){
             case 'checkbox':
             var subname=e.target.getAttribute("subname");
-              chrome.storage.local.get(null, (d)=>{
+              browser.storage.local.get().then((d)=>{
                 if(subname){
                 d[e.target.name][subname]=e.target.checked;
                 }
@@ -60,7 +60,7 @@ function startListen(){
                 else{
                 d[e.target.name]=e.target.checked;
                 }
-                chrome.storage.local.set(d, (err)=>{
+                browser.storage.local.set(d).then((err)=>{
                   //if keepStck is turned on, make sure to tell the current page so it can
                   // set the tmpStack and set the proper badge number
                   //no need to call actTabMsg("update settings"); as "keep stack" calls it already
@@ -75,7 +75,7 @@ function startListen(){
             break;
             default:
             d[e.target.name]=e.target.value;
-            chrome.storage.local.set(d, (e)=>{actTabMsg("update settings");});
+            browser.storage.local.set(d).then((e)=>{actTabMsg("update settings");});
             break;
             }
           }
@@ -87,14 +87,14 @@ function startListen(){
       case "addPrfl":
       nm=document.getElementById("newPrfl").value;
         if(nm&&nm!=""&&nm!=null&&nm!=undefined){
-          chrome.storage.local.get(null,(d)=>{
+          browser.storage.local.get(null,(d)=>{
             if(d.stcks.hasOwnProperty(nm)){
             notify('Profile not added. "'+nm+'" already exists.');
             }
             else{
             d.stcks[nm]=[];
             d.keepStck[nm]=false;
-              chrome.storage.local.set(d,(e)=>{
+              browser.storage.local.set(d).then((e)=>{
               notify('Profile: "'+nm+'" added.');
               document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
               actTabMsg("update settings");
@@ -116,12 +116,12 @@ function startListen(){
       case "delPrfl":
       nm=document.getElementById("prflSlct").value;
         if(nm&&nm!=""&&nm!=null&&nm!=undefined){
-          chrome.storage.local.get(null,(d)=>{
+          browser.storage.local.get(null,(d)=>{
           delete d.stcks[nm];
           delete d.keepStck[nm];
           var arr=Object.keys(d.stcks);
           d.curStck=arr.length>=1?arr[0]:""; 
-            chrome.storage.local.set(d,(e)=>{
+            browser.storage.local.set(d).then((e)=>{
             document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
             notify('Profile: "'+nm+'" deleted.');
             document.getElementById("delPrflMod").style.display="none";
@@ -133,10 +133,10 @@ function startListen(){
       case "openLink":
         switch(e.target.name){
           //case 'settings':
-            //chrome.runtime.openOptionsPage();
+            //browser.runtime.openOptionsPage();
           //break;
           case 'donate':
-            chrome.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
+            browser.tabs.create({url: 'https://b3spage.sourceforge.io/?copaBrando'});
           break;
           default:
           break;
@@ -170,14 +170,14 @@ function transNL(str){
   if(!str || str === undefined || str == "" || typeof str != "string"){
   return str;
   }
-return str.replaceAll("\n", '\\n');
+return str.replaceAll("\n", "\\n");
 }
 
 function nlTrans(str){
   if(!str || str === undefined || str == "" || typeof str != "string"){
   return str;
   }
-return str.replaceAll('\\n', "\n");
+return str.replaceAll("\\n", "\n");
 }
 
 function arr2StrBlck(arr){
@@ -202,7 +202,7 @@ return str.split("\n");
 
 
 //set the checkbox from the config
-chrome.storage.local.get(null,(d) => {
+browser.storage.local.get().then((d) => {
   //current stack
   document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);

@@ -1,7 +1,7 @@
 'use strict';
 
 
-chrome.storage.local.get(null, (d) => {
+browser.storage.local.get().then((d) => {
   if(Object.keys(d).length <= 0){
     var settings={
     "curStck":"scratch",
@@ -17,42 +17,62 @@ chrome.storage.local.get(null, (d) => {
     "pstFrmStck": false,
       "shrtCts":{
       "pst":{"v":true,"alt":true}
-      }
+      },
+    "datetime":Date.parse(new Date())
     };
-    chrome.storage.local.set(settings, (d)=>{});
+    browser.storage.local.set(settings).then((d)=>{});
   }
 });
 
 //tell active tabe to update settings
-chrome.tabs.onActivated.addListener(function(activeInfo){
-  chrome.tabs.query({active:true, currentWindow:true},function(tabs){
-    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("chrome")==0){
+browser.tabs.onActivated.addListener(function(activeInfo){
+  browser.tabs.query({active:true, currentWindow:true},function(tabs){
+    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("browser")==0){
     return null;
     }
-    chrome.tabs.sendMessage(tabs[0].id, {action:"update settings"});
+    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"});
   });
 });
 
 
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
-  if(msg.num<=0){
-  chrome.browserAction.setBadgeText({text: ""});
+browser.windows.onFocusChanged.addListener(function(activeInfo){
+  browser.tabs.query({active:true, currentWindow:true},function(tabs){
+    if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("browser")==0){
+    return null;
+    }
+    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"});
+  });
+
+});
+
+
+browser.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+  if(msg.hasOwnProperty('num')){
+  browser.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+    if(msg.num<=0){
+    browser.browserAction.setBadgeText({text: ""});
+    }
+    else{
+    browser.browserAction.setBadgeText({text: msg.num.toString()});
+    }
   }
-  else{
-  chrome.browserAction.setBadgeText({text: msg.num.toString()});
+  /*possibly for syncing.
+  if(msg.hasOwnProperty('syncAll')){
   }
+  */
 sendResponse(true);
 });
 
-
-chrome.runtime.onInstalled.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [new chrome.declarativeContent.PageStateMatcher({
+/*------- enables toolbar icon when conditions are met. Doesn't need/not supported for firefox------------
+browser.runtime.onInstalled.addListener(function() {
+  browser.declarativeContent.onPageChanged.removeRules(undefined, function() {
+    browser.declarativeContent.onPageChanged.addRules([{
+      conditions: [new browser.declarativeContent.PageStateMatcher({
         pageUrl: {urlMatches: '(http|https|file):/+[a-z]*'},
       })],
-      actions: [new chrome.declarativeContent.ShowPageAction()]
+      actions: [new browser.declarativeContent.ShowPageAction()]
     }]);
   });
 });
+--------------------------------------------------------------------------------------------------------*/
+

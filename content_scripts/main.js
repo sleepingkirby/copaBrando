@@ -10,9 +10,9 @@
   }
   window.hasRun = true;
 
-  var stack=[]; //the stack that the page actually uses. chrome.storage.local is too slow to keep up nor can it keep order. I've tried
+  var stack=[]; //the stack that the page actually uses. browser.storage.local is too slow to keep up nor can it keep order. I've tried
   var tmpStack=[]; //temporary stack, for when "keep stack" is set
-  var settings={}; //chrome.storage.local.get(null); to be updated when changed and then signaled (to reduce load).
+  var settings={}; //browser.storage.local.get(null); to be updated when changed and then signaled (to reduce load).
   var cpSt=false; //copy state
   var pstSt=false; // paste state
 
@@ -166,13 +166,12 @@
   call to update settings variable and updates, if set, updates badge
   ------------------------------------------------------------------------------------------------*/
   function updtSttng(bool=true){
-    chrome.storage.local.get(null, (d)=>{
-
+    browser.storage.local.get().then((d)=>{
     settings=Object.assign({},d);
     stack=d.stcks[d.curStck].slice();
     tmpStack=d.stcks[d.curStck].slice();
       if(bool){
-      chrome.runtime.sendMessage({'num':stack.length});
+      browser.runtime.sendMessage({'num':stack.length});
       }
     });
   }
@@ -184,6 +183,7 @@ post:
 ---------------------------*/
   function mouseOvrFnc(e){
     if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
+    console.log("asfdasdf");
     let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
     window.focus();
     //console.log("paste: "+txt);
@@ -201,7 +201,7 @@ post:
       if(settings.keepStck[settings.curStck]){
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
       }
-    chrome.runtime.sendMessage({'num':sndNum});
+    browser.runtime.sendMessage({'num':sndNum});
     }
 
     if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck && settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
@@ -219,14 +219,14 @@ post:
       stack.push(txt);
       cpSt = true;
       }
-    chrome.runtime.sendMessage({'num':stack.length});
+    browser.runtime.sendMessage({'num':stack.length});
     }
   }
 
   /*---------------------------------------------
   pre: global variable stack and settings set, updtSttng();
-  post: chrome.storage.local updated from local settings
-  sets the chrome.storage.local to local settings.
+  post: browser.storage.local updated from local settings
+  sets the browser.storage.local to local settings.
   ---------------------------------------------*/
   function updtChromeStorage(){
   let sndNum=stack.length;
@@ -235,9 +235,9 @@ post:
     }
     else{
     settings["stcks"][settings.curStck]=stack.slice();
-    chrome.storage.local.set(settings,(d)=>{updtSttng();});
+    browser.storage.local.set(settings).then((d)=>{updtSttng();});
     }
-  chrome.runtime.sendMessage({'num':sndNum});
+  browser.runtime.sendMessage({'num':sndNum});
   }
 
 
@@ -279,7 +279,7 @@ post:
 
   /*-----------------------------------------------
   pre:keyYpPrssd(), validEl(), smrtFill()
-  post: stack popped, chrome.storage updated
+  post: stack popped, browser.storage updated
   activate on key press. Currently, only 
   -----------------------------------------------*/
   function keysDwn(e){
@@ -303,35 +303,48 @@ post:
       }
       else{
       settings["stcks"][settings.curStck]=stack.slice();
-      chrome.storage.local.set(settings,(d)=>{updtSttng();});
+      browser.storage.local.set(settings).then((d)=>{updtSttng();});
       }
-    chrome.runtime.sendMessage({'num':sndNum});
+    browser.runtime.sendMessage({'num':sndNum});
     }
   }
 
 
   /*------------------------------------------------
   pre:none
-  post: stack updated and chrome.storage 
+  post: stack updated and browser.storage 
   what to do on selecting text, right now, copy highlight to stack
-  and chrome.storage
+  and browser.storage
   ------------------------------------------------*/
   function mouseUpFnc(e){
   let txt=window.getSelection().toString();
     if( settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
     stack.push(txt);
     copyHack(txt);
-    chrome.runtime.sendMessage({'num':stack.length});
+    browser.runtime.sendMessage({'num':stack.length});
     settings.stcks[settings.curStck]=stack;
-    chrome.storage.local.set(settings,(d)=>{updtSttng();});
+    browser.storage.local.set(settings).then((d)=>{updtSttng();});
+    }
+  }
+
+  /*------------------------------------------------
+  pre:none
+  post: stack updated and browser.storage 
+  what to do on selecting text, right now, copy highlight to stack
+  and browser.storage
+  ------------------------------------------------*/
+  function mouseOutFnc(e){
+    if(e&&e.target&&e.target.tagName=="HTML"){
+    browser.runtime.sendMessage({'syncAll':true});
     }
   }
 
 
+
   /*--------------------------------------------------
   pre: keyUpPrssd()
-  post: updates settings, stack and/or chrome.storage.local
-  terminate state and do any cleanup. i.e. save to chrome storage, reset tmp buffer, etc.
+  post: updates settings, stack and/or browser.storage.local
+  terminate state and do any cleanup. i.e. save to browser storage, reset tmp buffer, etc.
   --------------------------------------------------*/
   function termState(e){
     if(keyUpPrssd(e,settings.pstKeys)&&pstSt){
@@ -342,7 +355,7 @@ post:
       tmpStack=stack.slice();
       let sndNum=stack.length;
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
-      chrome.runtime.sendMessage({'num':sndNum});
+      browser.runtime.sendMessage({'num':sndNum});
       }
       else{
       settings["stcks"][settings.curStck]=stack.slice();
@@ -352,7 +365,7 @@ post:
       console.log(settings.curStck);
       console.log(stack);
       */
-      chrome.storage.local.set(settings,(d)=>{updtSttng();});
+      browser.storage.local.set(settings).then((d)=>{updtSttng();});
       }
     }
 
@@ -360,7 +373,7 @@ post:
     if(keyUpPrssd(e,settings.cpKeys)&&cpSt){
     //release copy key
     cpSt=false;
-      //if keepStck is stack is set, stack in chrome.storage should not be modified. don't need to update
+      //if keepStck is stack is set, stack in browser.storage should not be modified. don't need to update
       if(!settings.keepStck[settings.curStck]){
       settings["stcks"][settings.curStck]=stack.slice();
       /*  
@@ -368,7 +381,7 @@ post:
       console.log(settings);
       console.log(stack);
       */
-      chrome.storage.local.set(settings,(d)=>{updtSttng();});
+      browser.storage.local.set(settings).then((d)=>{updtSttng();});
       }
     }
   }
@@ -388,7 +401,7 @@ post:
       case 'keep stack':
       tmpStack=stack.slice();
       updtSttng(false);
-      chrome.runtime.sendMessage({'num':tmpStack.length.toString()+"/"+stack.length.toString()});
+      browser.runtime.sendMessage({'num':tmpStack.length.toString()+"/"+stack.length.toString()});
        
       sendResponse(true);
       break; 
@@ -405,6 +418,13 @@ post:
   document.addEventListener("keyup", termState);
   document.addEventListener("keydown", keysDwn);
   document.addEventListener("paste", myPst);
-  
-  chrome.runtime.onMessage.addListener(runOnMsg);
+  /*this allows, when you mouse out of a window, to send a message to the back end
+  the point is to send a message to all windows and tabs to sync their settings with what's in browser.storage.
+  But all that could be a lot of work considering how often people will have tons of tabs open so I'm leaving this out for now.
+  let html=document.getElementsByTagName('html');
+    if(html&&html.length>=1){
+    html[0].addEventListener("mouseleave",mouseOutFnc);
+    }
+  */
+  browser.runtime.onMessage.addListener(runOnMsg);
 })();

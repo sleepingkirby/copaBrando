@@ -1,5 +1,5 @@
 html, body {
-  width: auto;
+  width: 275px;
   font-family: "DejaVu Sans", Arial, sans-serif;
   background-color: #000000;
   color: #888888;
@@ -33,7 +33,7 @@ padding:0px 2px 0px 2px;
 
 textarea{
 text-overflow:clip;
-white-space: nowrap;
+white-space: preserve-breaks nowrap;
 min-width: 160px;
 max-width: 720px;
 min-height:140px;
