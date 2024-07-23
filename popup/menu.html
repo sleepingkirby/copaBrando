@@ -30,19 +30,23 @@
     <textarea id="stackTA" act="updt" name="curStck"></textarea>
     </div>
 
-    <div id="keep" title="It sets the current stack to read only. Nothing can be copied in, only copied out of">
+    <div id="clear" style="justify-content:flex-start" >
+    <input type="submit" act="clear" name="clear" value="clear"/>
+    </div>
+
+    <div id="keep">
       <input type="checkbox" id="keepInpt" act="updt" name="keepStck" />
-      <div>Keep</div>
+      <div title="It sets the current stack to read only. Nothing can be copied in, only copied out of">Keep</div>
     </div>
 
-    <div id="hghlghtCp" title="Will automatically copy what ever you've highlighted">
+    <div id="hghlghtCp">
       <input type="checkbox" id="hghlghtCpInpt" act="updt" name="hghlghtCp" />
-      <div>HL cp</div>
+      <div title="Will automatically copy what ever you've highlighted">HL cp</div>
     </div>
 
-    <div id="pstFrmStck" title="Allows you to paste from stack rather than from clipboard">
+    <div id="pstFrmStck">
       <input type="checkbox" id="pstFrmStckInpt" act="updt" name="pstFrmStck" />
-      <div>stk pst</div>
+      <div title="Allows you to paste from stack rather than from clipboard">Stack Paste</div>
     </div>
  
     

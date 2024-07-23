@@ -142,6 +142,15 @@ function startListen(){
           break;
         }
       break;
+      case "clear":
+        browser.storage.local.get().then((d)=>{
+        d.stcks[d.curStck]=[];
+          browser.storage.local.set(d).then(()=>{
+          document.getElementById("stackTA").value="";
+          browser.runtime.sendMessage({'num':0});
+          });
+        });  
+      break;
       default:
       break;
     }
