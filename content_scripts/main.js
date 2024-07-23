@@ -244,7 +244,8 @@ post:
   /*---------------------------------------------
   pre:
   post:
-  this happens AFTER paste happens 
+  this happens AFTER paste happens. The point of this is 
+  to override the default paste data with what's in the stack
   ---------------------------------------------*/
   function myPst(e){
     if(!settings.pstFrmStck){
