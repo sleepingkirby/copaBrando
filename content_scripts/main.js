@@ -176,14 +176,54 @@
     });
   }
 
+  /*---------------------------
+  pre:
+  post:
+  looks for pattern(variable) and replace with data
+  ---------------------------*/
+  function varVal(str){
+    if(!str){
+    return '';
+    }
+  let rtrn=str;
+  let dt=new Date();
 
-/*---------------------------
-pre:
-post:
----------------------------*/
+  //locale date. i.e. 7/23/2024
+  rtrn=rtrn.replaceAll(/\[\[<now:localeDate>\]\]/g,dt.toLocaleDateString());
+
+  //date string. i.e. Tue Jul 23 2024 
+  rtrn=rtrn.replaceAll(/\[\[<now:date>\]\]/g,dt.toDateString());
+
+  //intl date. i.e. 2024-07-23 
+  rtrn=rtrn.replaceAll(/\[\[<now:intlDate>\]\]/g, String(dt.getFullYear())+"-"+String(dt.getMonth()+1)+"-"+String(dt.getDate()));
+
+  //full year. i.e. 2024 
+  rtrn=rtrn.replaceAll(/\[\[<now:fullYear>\]\]/g, String(dt.getFullYear()));
+
+  //month num. i.e. 07 
+  rtrn=rtrn.replaceAll(/\[\[<now:monNum>\]\]/g, String(dt.getMonth()+1));
+
+  //month full name. 
+  let month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  rtrn=rtrn.replaceAll(/\[\[<now:monNameFull>\]\]/g, month[dt.getMonth()]);
+
+  //month full name. 
+  month = ["Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"];
+  rtrn=rtrn.replaceAll(/\[\[<now:monNameShort>\]\]/g, month[dt.getMonth()]);
+
+  return rtrn;
+  }
+
+
+  /*---------------------------
+  pre:
+  post:
+  ---------------------------*/
   function mouseOvrFnc(e){
+  //paste 
     if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
+    txt=varVal(txt);
     window.focus();
     //console.log("paste: "+txt);
       if(typeof txt=="string"){
@@ -203,6 +243,7 @@ post:
     browser.runtime.sendMessage({'num':sndNum});
     }
 
+  //copy
     if(e && e.target && altKeyPrssd(e, settings.cpKeys) && validEl(e.target, settings.cpElBList, false)&& settings.keepStck && settings.keepStck.hasOwnProperty(settings.curStck) && !settings.keepStck[settings.curStck]){
     window.focus();
     let txt=null;
@@ -271,7 +312,7 @@ post:
 
     oldtxt = clpDt.getData('Text');
     txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack[stack.length-1];
-    
+    txt=varVal(txt);
       if(txt){
       copyHack(txt);
       }
