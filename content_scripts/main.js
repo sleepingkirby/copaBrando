@@ -182,6 +182,9 @@
   looks for pattern(variable) and replace with data
   ---------------------------*/
   function varVal(str){
+    if(!settings.varValBool){
+    return str;
+    }
     if(!str){
     return '';
     }

@@ -18,7 +18,7 @@ browser.storage.local.get().then((d) => {
       "shrtCts":{
       "pst":{"v":true,"alt":true}
       },
-    "datetime":Date.parse(new Date())
+    "varValBool":false
     };
     browser.storage.local.set(settings).then((d)=>{});
   }
