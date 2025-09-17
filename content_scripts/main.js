@@ -450,6 +450,9 @@
       browser.runtime.sendMessage({'num':tmpStack.length.toString()+"/"+stack.length.toString()});
        
       sendResponse(true);
+      break;
+      case 'clear stack':
+      stack=[]
       break; 
       default:
       break;

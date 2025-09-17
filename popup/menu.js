@@ -149,6 +149,8 @@ function startListen(){
           document.getElementById("stackTA").value="";
           browser.runtime.sendMessage({'num':0});
           });
+        }).then((d)=>{
+        actTabMsg("clear stack");
         });  
       break;
       default:
