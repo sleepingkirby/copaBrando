@@ -135,13 +135,12 @@
     }
 
     if(appnd && vls=="value"){
-
-      el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
-      el.dispatchEvent(new Event('change',{bubbles:true}));
-      el[vls]=el[vls];
-      el.dispatchEvent(new Event('change',{bubbles:true}));
-      el[vls]+=val;
-      return 0;
+    el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+    el[vls]=el[vls];
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+    el[vls]+=val;
+    return 0;
     }
 
     if(!flag){
@@ -149,12 +148,12 @@
     return 0;
     }
 
-    el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
-    el.dispatchEvent(new Event('change',{bubbles:true}));
-    el[vls]=val;
-    el.dispatchEvent(new Event('change',{bubbles:true}));
-    el[vls]=val;
-    return 0;
+  el.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste'}));
+  el.dispatchEvent(new Event('change',{bubbles:true}));
+  el[vls]=val;
+  el.dispatchEvent(new Event('change',{bubbles:true}));
+  el[vls]=val;
+  return 0;
   }
  
 
@@ -217,6 +216,35 @@
   return rtrn;
   }
 
+  /*---------------------------
+  pre: settings (sttngs) from the browser
+  post: none
+  encodes the str with encodeURIComponent if sttngs['encodeStrs'] is true
+  ---------------------------*/
+  function encodeStrSttngs(sttngs=null,str=''){
+    if(!sttngs||Object.keys(sttngs).length<=0||!str||str==''){
+    return '';
+    }
+    if(!sttngs.hasOwnProperty('encodeStrs')||!sttngs.encodeStrs){
+    return str;
+    }
+  return encodeURIComponent(str);
+  }
+
+  /*---------------------------
+  pre: settings (sttngs) from the browser
+  post: none
+  decodes the str with decodeURIComponent if sttngs['encodeStrs'] is true
+  ---------------------------*/
+  function decodeStrSttngs(sttngs=null,str=''){
+    if(!sttngs||Object.keys(sttngs).length<=0||!str||str==''){
+    return '';
+    }
+    if(!sttngs.hasOwnProperty('encodeStrs')||!sttngs.encodeStrs){
+    return str;
+    }
+  return decodeURIComponent(str);
+  }
 
   /*---------------------------
   pre:
@@ -227,9 +255,12 @@
     if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
     let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
     txt=varVal(txt);
+    txt=decodeStrSttngs(settings,txt);
     window.focus();
-    //console.log("paste: "+txt);
-      if(typeof txt=="string"){
+    //console.log(`paste[${tmpStack.length}][${stack.length}]: `+txt);
+    pstSt = true;
+    let sndNum=stack.length;
+      if(typeof txt=="string" && (sndNum>0 && tmpStack.length>0)){ //do not paste if stack, either stack, is empty
         if(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea"){
         //smrtFill(onEl, false, 'checked', flag);
         smrtFill(e.target, txt, 'value',true);
@@ -238,9 +269,7 @@
         smrtFill(e.target, txt, 'contentEditable',true);
         }
       }
-    pstSt = true;
-    let sndNum=stack.length;
-      if(settings.keepStck[settings.curStck]){
+     if(settings.keepStck[settings.curStck]){
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
       }
     browser.runtime.sendMessage({'num':sndNum});
@@ -260,8 +289,7 @@
       else{
       txt= e.target.value;
       }
-    //console.log(tagNm,", copy: ",txt); 
-    stack.push(txt);
+    stack.push(encodeStrSttngs(settings,txt));
     cpSt = true;
 
     browser.runtime.sendMessage({'num':stack.length});
@@ -316,6 +344,7 @@
     oldtxt = clpDt.getData('Text');
     txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack[stack.length-1];
     txt=varVal(txt);
+    txt=decodeStrSttngs(settings,txt);
       if(txt){
       copyHack(txt);
       }
@@ -325,15 +354,19 @@
 
   /*-----------------------------------------------
   pre:keyYpPrssd(), validEl(), smrtFill()
-  post: stack popped, browser.storage updated
-  activate on key press. Currently, only 
+  post: stack popped(possibly), browser.storage updated
+  activate on key press. Paste into current element if the paste key combination
+  is pressed and then released but no mouse movement was done.
+  This is to mimic the user expected behavior that if you presse the paste button
+  combo over a field, it should paste, even if the mouse was not moved
   -----------------------------------------------*/
   function keysDwn(e){
     if(e && keyUpPrssd(e,settings.shrtCts.pst) && validEl(e.target, settings.pstElBList, true)){
-    var txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack.pop();
+    let txt=settings.keepStck[settings.curStck]?tmpStack[tmpStack.length-1]:stack.pop();
+    txt=decodeStrSttngs(settings,txt);
     window.focus();
     //console.log("paste: "+txt);
-      if(typeof txt=="string"){
+      if(typeof txt=="string"&& (stack.length>0 && tmpStack.length>0)){ //do not paste if stack, either stack, is empty
         if(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea"){
         //smrtFill(onEl, false, 'checked', flag);
         smrtFill(e.target, txt, 'value',true, true);
@@ -364,8 +397,8 @@
   ------------------------------------------------*/
   function mouseUpFnc(e){
   let txt=window.getSelection().toString();
-    if( settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
-    stack.push(txt);
+    if(settings.hghlghtCp && !settings.keepStck[settings.curStck] && txt && typeof txt == "string" && txt!=""){
+    stack.push(encodeStrSttngs(settings,txt));
     copyHack(txt);
     browser.runtime.sendMessage({'num':stack.length});
     settings.stcks[settings.curStck]=stack;

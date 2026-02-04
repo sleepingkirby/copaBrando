@@ -18,19 +18,27 @@ browser.storage.local.get().then((d) => {
       "shrtCts":{
       "pst":{"v":true,"alt":true}
       },
-    "varValBool":false
+    "varValBool":false,
+    "encodeStrs":true
     };
     browser.storage.local.set(settings).then((d)=>{});
   }
 });
 
-//tell active tabe to update settings
+function noLstnErr(e,tab=null){
+  if(tab&&tab.hasOwnProperty('url')){
+  console.log(`URL: ${tab.url}`);
+  }
+  console.log(e);
+}
+
+//tell active tab to update settings
 browser.tabs.onActivated.addListener(function(activeInfo){
   browser.tabs.query({active:true, currentWindow:true},function(tabs){
     if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("browser")==0){
     return null;
     }
-    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"});
+    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"}).catch((e)=>{noLstnErr(e,tabs[0]);});
   });
 });
 
@@ -40,7 +48,7 @@ browser.windows.onFocusChanged.addListener(function(activeInfo){
     if(!tabs||tabs.length<=0||!tabs.hasOwnProperty(0)||tabs[0].url==""||tabs[0].url.indexOf("browser")==0){
     return null;
     }
-    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"});
+    browser.tabs.sendMessage(tabs[0].id, {action:"update settings"}).catch((e)=>{noLstnErr(e,tabs[0]);});
   });
 
 });

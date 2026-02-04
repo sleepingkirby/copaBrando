@@ -221,6 +221,7 @@ browser.storage.local.get().then((d) => {
   document.getElementById("hghlghtCpInpt").checked=d.hghlghtCp;
   document.getElementById("pstFrmStckInpt").checked=d.pstFrmStck;
   document.getElementById("varValBool").checked=d.varValBool;
+  document.getElementById("encodeStrs").checked=d.encodeStrs;
 
   document.getElementById("cpKeysCtrl").checked=d.cpKeys.ctrl;
   document.getElementById("cpKeysAlt").checked=d.cpKeys.alt;
