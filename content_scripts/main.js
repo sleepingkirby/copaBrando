@@ -167,6 +167,7 @@
   function updtSttng(bool=true){
     browser.storage.local.get().then((d)=>{
     settings=Object.assign({},d);
+    
     stack=d.stcks[d.curStck].slice();
     tmpStack=d.stcks[d.curStck].slice();
       if(bool){
@@ -253,14 +254,19 @@
   function mouseOvrFnc(e){
   //paste 
     if(e && e.target && altKeyPrssd(e, settings.pstKeys) && validEl(e.target, settings.pstElBList, true)){
-    let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
-    txt=varVal(txt);
-    txt=decodeStrSttngs(settings,txt);
     window.focus();
     //console.log(`paste[${tmpStack.length}][${stack.length}]: `+txt);
     pstSt = true;
     let sndNum=stack.length;
-      if(typeof txt=="string" && (sndNum>0 && tmpStack.length>0)){ //do not paste if stack, either stack, is empty
+      if(sndNum>0 && tmpStack.length>0){ //do not paste if stack, either stack, is empty
+      let txt=settings.keepStck[settings.curStck]?tmpStack.pop():stack.pop();
+      txt=varVal(txt);
+      txt=decodeStrSttngs(settings,txt);
+
+        //don't paste if data isn't string
+        if(typeof txt!='string'){
+        return null;
+        }
         if(e.target.tagName.toLocaleLowerCase()=="input"||e.target.tagName.toLocaleLowerCase()=="textarea"){
         //smrtFill(onEl, false, 'checked', flag);
         smrtFill(e.target, txt, 'value',true);
@@ -269,7 +275,7 @@
         smrtFill(e.target, txt, 'contentEditable',true);
         }
       }
-     if(settings.keepStck[settings.curStck]){
+      if(settings.keepStck[settings.curStck]){
       sndNum=tmpStack.length.toString()+"/"+sndNum.toString();
       }
     browser.runtime.sendMessage({'num':sndNum});
