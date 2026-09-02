@@ -96,7 +96,7 @@ function startListen(){
             d.keepStck[nm]=false;
               browser.storage.local.set(d).then((e)=>{
               notify('Profile: "'+nm+'" added.');
-              document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
+              hash2Optn(d.stcks, d.curStck, "prflSlct");
               actTabMsg("update settings");
               });
             }
@@ -122,7 +122,7 @@ function startListen(){
           var arr=Object.keys(d.stcks);
           d.curStck=arr.length>=1?arr[0]:""; 
             browser.storage.local.set(d).then((e)=>{
-            document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
+            hash2Optn(d.stcks, d.curStck, "prflSlct");
             notify('Profile: "'+nm+'" deleted.');
             document.getElementById("delPrflMod").style.display="none";
             actTabMsg("update settings");
@@ -160,19 +160,29 @@ function startListen(){
 }
 
 
-function hash2Optn(hsh, slct){
-  if(!hsh || hsh === null || typeof hsh !== "object"){
+function hash2Optn(hsh, slct, prntId){
+  if(!hsh || hsh === null || typeof hsh !== "object" || !prntId || prntId==null){
   return false;
   }
 
+let prnt=document.getElementById(prntId);
+
+  //if can't find parent element, stop.
+  if(!prnt){
+  return false;
+  }
+
+prnt.innerHTML='';
+
 var rtrn="";
   for(i in hsh){
+  let opt=document.createElement('option');
+  opt.value=i;
+  opt.innerText=i;
     if(i==slct){
-    rtrn+='<option value="'+i+'" selected>'+i+'</option>';
+    opt.selected=true;
     }
-    else{
-    rtrn+='<option value="'+i+'">'+i+'</option>';
-    }
+  prnt.appendChild(opt);
   }
 return rtrn;
 }
@@ -215,7 +225,7 @@ return str.split("\n");
 //set the checkbox from the config
 browser.storage.local.get().then((d) => {
   //current stack
-  document.getElementById("prflSlct").innerHTML=hash2Optn(d.stcks, d.curStck);
+  hash2Optn(d.stcks, d.curStck, "prflSlct");
   document.getElementById("stackTA").value=arr2StrBlck(d.stcks[d.curStck]);
   document.getElementById("keepInpt").checked=d.keepStck[d.curStck];
   document.getElementById("hghlghtCpInpt").checked=d.hghlghtCp;
